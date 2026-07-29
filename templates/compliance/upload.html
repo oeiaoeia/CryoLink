@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Upload Document{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1"><i class="bi bi-cloud-upload"></i> Upload Compliance Document</h2>
+        <p class="text-muted mb-0">Add a new document to the compliance vault</p>
+    </div>
+    <a href="{{ url_for('compliance.index') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Back</a>
+</div>
+<form method="POST" action="{{ url_for('compliance.upload') }}">
+    <div class="row g-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header"><h5 class="mb-0">Document Information</h5></div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="document_type" class="form-label">Document Type *</label>
+                        <select class="form-select" id="document_type" name="document_type" required>
+                            <option value="">Select type...</option>
+                            <option value="certificate_of_analysis">Certificate of Analysis</option>
+                            <option value="temperature_log">Temperature Log</option>
+                            <option value="customs_declaration">Customs Declaration</option>
+                            <option value="gdp_certificate">GDP Certificate</option>
+                            <option value="chain_of_custody">Chain of Custody</option>
+                            <option value="shipping_manifest">Shipping Manifest</option>
+                            <option value="regulatory_approval">Regulatory Approval</option>
+                            <option value="insurance_certificate">Insurance Certificate</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title *</label>
+                        <input type="text" class="form-control" id="title" name="title" required placeholder="Document title">
+                    </div>
+                    <div class="mb-3">
+                        <label for="issued_by" class="form-label">Issued By</label>
+                        <input type="text" class="form-control" id="issued_by" name="issued_by" placeholder="Issuing organization">
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="issued_date" class="form-label">Issued Date</label>
+                            <input type="date" class="form-control" id="issued_date" name="issued_date">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="valid_until" class="form-label">Valid Until</label>
+                            <input type="date" class="form-control" id="valid_until" name="valid_until">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-header"><h5 class="mb-0">Link to Shipment</h5></div>
+                <div class="card-body">
+                    <select class="form-select" name="shipment_id">
+                        <option value="">No shipment</option>
+                        {% for s in shipments %}
+                        <option value="{{ s.id }}">{{ s.shipment_number }} — {{ s.product_name[:30] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary btn-lg"><i class="bi bi-check-lg"></i> Upload Document</button>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}

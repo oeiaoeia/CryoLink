@@ -1,0 +1,368 @@
+{% extends "base.html" %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1"><i class="bi bi-gear"></i> Settings</h2>
+        <p class="text-muted mb-0">Manage your preferences and account settings</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Appearance Settings -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-palette"></i> Appearance
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Theme</label>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="theme-option card h-100" onclick="setTheme('light')" style="cursor: pointer;">
+                                <div class="card-body text-center">
+                                    <div class="theme-preview bg-light border rounded mb-2" style="height: 80px;"></div>
+                                    <strong>Light</strong>
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input" type="radio" name="theme" id="themeLight" value="light">
+                                        <label class="form-check-label" for="themeLight">Select</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="theme-option card h-100" onclick="setTheme('dark')" style="cursor: pointer;">
+                                <div class="card-body text-center">
+                                    <div class="theme-preview bg-dark border rounded mb-2" style="height: 80px;"></div>
+                                    <strong class="text-white">Dark</strong>
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input" type="radio" name="theme" id="themeDark" value="dark">
+                                        <label class="form-check-label text-white" for="themeDark">Select</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="autoTheme" onchange="toggleAutoTheme()">
+                    <label class="form-check-label" for="autoTheme">
+                        <strong>Auto Theme</strong>
+                        <p class="text-muted small mb-0">Automatically switch theme based on system preferences</p>
+                    </label>
+                </div>
+                
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="compactMode" onchange="toggleCompactMode()">
+                    <label class="form-check-label" for="compactMode">
+                        <strong>Compact Mode</strong>
+                        <p class="text-muted small mb-0">Reduce spacing and font sizes for more content</p>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notification Settings -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-bell"></i> Notifications
+            </div>
+            <div class="card-body">
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="emailAlerts" {% if current_user.email_notifications %}checked{% endif %}>
+                    <label class="form-check-label" for="emailAlerts">
+                        <strong>Email Alerts</strong>
+                        <p class="text-muted small mb-0">Receive critical alerts via email</p>
+                    </label>
+                </div>
+                
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="pushNotifications" {% if current_user.notifications_enabled %}checked{% endif %}>
+                    <label class="form-check-label" for="pushNotifications">
+                        <strong>Push Notifications</strong>
+                        <p class="text-muted small mb-0">Browser notifications for important events</p>
+                    </label>
+                </div>
+                
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="dailyDigest">
+                    <label class="form-check-label" for="dailyDigest">
+                        <strong>Daily Digest</strong>
+                        <p class="text-muted small mb-0">Get a daily summary of shipments and alerts</p>
+                    </label>
+                </div>
+                
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="weekendReports">
+                    <label class="form-check-label" for="weekendReports">
+                        <strong>Weekly Reports</strong>
+                        <p class="text-muted small mb-0">Receive weekly performance reports</p>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Account Settings -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-person-circle"></i> Account
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Language</label>
+                    <select class="form-select" id="languageSelect" onchange="savePreference('language', this.value)">
+                        <option value="en" {% if current_user.language == 'en' %}selected{% endif %}>English</option>
+                        <option value="de" {% if current_user.language == 'de' %}selected{% endif %}>Deutsch</option>
+                        <option value="es" {% if current_user.language == 'es' %}selected{% endif %}>Español</option>
+                        <option value="fr" {% if current_user.language == 'fr' %}selected{% endif %}>Français</option>
+                        <option value="zh" {% if current_user.language == 'zh' %}selected{% endif %}>中文</option>
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Timezone</label>
+                    <select class="form-select" id="timezoneSelect" onchange="savePreference('timezone', this.value)">
+                        <option value="UTC" {% if current_user.timezone == 'UTC' %}selected{% endif %}>UTC</option>
+                        <option value="America/New_York" {% if current_user.timezone == 'America/New_York' %}selected{% endif %}>Eastern Time</option>
+                        <option value="America/Chicago" {% if current_user.timezone == 'America/Chicago' %}selected{% endif %}>Central Time</option>
+                        <option value="America/Los_Angeles" {% if current_user.timezone == 'America/Los_Angeles' %}selected{% endif %}>Pacific Time</option>
+                        <option value="Europe/London" {% if current_user.timezone == 'Europe/London' %}selected{% endif %}>London</option>
+                        <option value="Europe/Berlin" {% if current_user.timezone == 'Europe/Berlin' %}selected{% endif %}>Berlin</option>
+                        <option value="Asia/Singapore" {% if current_user.timezone == 'Asia/Singapore' %}selected{% endif %}>Singapore</option>
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Date Format</label>
+                    <select class="form-select" onchange="savePreference('dateFormat', this.value)">
+                        <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                        <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                        <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Security Settings -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-shield-lock"></i> Security
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <strong>Password</strong>
+                        <p class="text-muted small mb-0">Last changed {{ current_user.password_changed_at.strftime('%b %d, %Y') if current_user.password_changed_at else 'Never' }}</p>
+                    </div>
+                    <a href="{{ url_for('auth.profile') }}" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-pencil"></i>
+                        Change
+                    </a>
+                </div>
+                
+                <hr>
+                
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="twoFactor" disabled>
+                    <label class="form-check-label" for="twoFactor">
+                        <strong>Two-Factor Authentication</strong>
+                        <p class="text-muted small mb-0">Coming soon</p>
+                    </label>
+                </div>
+                
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="sessionTimeout" checked>
+                    <label class="form-check-label" for="sessionTimeout">
+                        <strong>Auto Logout</strong>
+                        <p class="text-muted small mb-0">Automatically logout after 8 hours</p>
+                    </label>
+                </div>
+                
+                <div class="mt-3">
+                    <button class="btn btn-sm btn-outline-danger" onclick="showLogoutAllDevices()">
+                        <i class="bi bi-box-arrow-right"></i>
+                        Logout from All Devices
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Save Button -->
+<div class="mt-4 text-end">
+    <button class="btn btn-primary" onclick="saveAllSettings()">
+        <i class="bi bi-check-lg"></i>
+        Save All Settings
+    </button>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Theme management
+function setTheme(theme) {
+    localStorage.setItem('cryolink_theme', theme);
+    document.documentElement.setAttribute('data-theme', theme);
+    
+    // Update radio buttons
+    document.querySelectorAll('input[name="theme"]').forEach(el => el.checked = false);
+    document.getElementById('theme' + theme.charAt(0).toUpperCase() + theme.slice(1)).checked = true;
+    
+    // Update theme option cards
+    document.querySelectorAll('.theme-option').forEach(el => {
+        el.style.borderColor = 'transparent';
+        el.style.boxShadow = 'none';
+    });
+    event.currentTarget.style.borderColor = '#0066CC';
+    event.currentTarget.style.boxShadow = '0 0 0 2px rgba(0, 102, 204, 0.2)';
+    
+    showToast('Theme changed to ' + theme);
+}
+
+function toggleAutoTheme() {
+    const autoTheme = document.getElementById('autoTheme').checked;
+    localStorage.setItem('cryolink_auto_theme', autoTheme);
+    showToast(autoTheme ? 'Auto theme enabled' : 'Auto theme disabled');
+}
+
+function toggleCompactMode() {
+    const compactMode = document.getElementById('compactMode').checked;
+    localStorage.setItem('cryolink_compact', compactMode);
+    document.body.classList.toggle('compact-mode', compactMode);
+    showToast(compactMode ? 'Compact mode enabled' : 'Compact mode disabled');
+}
+
+function savePreference(key, value) {
+    localStorage.setItem('cryolink_' + key, value);
+    showToast(key + ' saved');
+}
+
+function saveAllSettings() {
+    // Save notification preferences
+    localStorage.setItem('cryolink_email_alerts', document.getElementById('emailAlerts').checked);
+    localStorage.setItem('cryolink_push_notifications', document.getElementById('pushNotifications').checked);
+    localStorage.setItem('cryolink_daily_digest', document.getElementById('dailyDigest').checked);
+    localStorage.setItem('cryolink_weekly_reports', document.getElementById('weekendReports').checked);
+    
+    showToast('All settings saved successfully!', 'success');
+}
+
+function showLogoutAllDevices() {
+    if (confirm('Are you sure you want to logout from all devices? This will end all active sessions.')) {
+        showToast('Logging out from all devices...', 'info');
+        // In production, this would call an API endpoint
+        setTimeout(() => {
+            window.location.href = '/auth/logout';
+        }, 1000);
+    }
+}
+
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    toast.style.cssText = 'bottom: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    toast.innerHTML = `
+        <i class="bi bi-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : 'info-circle'}"></i>
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
+
+// Load saved preferences on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Load theme
+    const savedTheme = localStorage.getItem('cryolink_theme') || 'light';
+    setTheme(savedTheme);
+    
+    // Load auto theme
+    const autoTheme = localStorage.getItem('cryolink_auto_theme') === 'true';
+    document.getElementById('autoTheme').checked = autoTheme;
+    
+    // Load compact mode
+    const compactMode = localStorage.getItem('cryolink_compact') === 'true';
+    document.getElementById('compactMode').checked = compactMode;
+    if (compactMode) {
+        document.body.classList.add('compact-mode');
+    }
+    
+    // Load notification preferences
+    document.getElementById('emailAlerts').checked = localStorage.getItem('cryolink_email_alerts') !== 'false';
+    document.getElementById('pushNotifications').checked = localStorage.getItem('cryolink_push_notifications') !== 'false';
+    document.getElementById('dailyDigest').checked = localStorage.getItem('cryolink_daily_digest') === 'true';
+    document.getElementById('weekendReports').checked = localStorage.getItem('cryolink_weekly_reports') === 'true';
+});
+</script>
+
+<style>
+.theme-option {
+    transition: all 0.3s ease;
+}
+
+.theme-option:hover {
+    transform: translateY(-2px);
+}
+
+.theme-preview {
+    background-image: linear-gradient(135deg, rgba(0,0,0,0.05) 25%, transparent 25%), 
+                      linear-gradient(225deg, rgba(0,0,0,0.05) 25%, transparent 25%), 
+                      linear-gradient(45deg, rgba(0,0,0,0.05) 25%, transparent 25%), 
+                      linear-gradient(315deg, rgba(0,0,0,0.05) 25%, transparent 25%);
+    background-size: 20px 20px;
+}
+
+.compact-mode {
+    font-size: 13px;
+}
+
+.compact-mode .card {
+    margin-bottom: 1rem;
+}
+
+.compact-mode .card-body {
+    padding: 0.75rem;
+}
+
+[data-theme="dark"] {
+    --bs-body-bg: #1a1a2e;
+    --bs-body-color: #eee;
+}
+
+[data-theme="dark"] .card {
+    background: #16213e;
+    border-color: #0f3460;
+}
+
+[data-theme="dark"] .card-header {
+    background: #0f3460;
+    border-color: #1a1a2e;
+    color: #eee;
+}
+
+[data-theme="dark"] .table {
+    --bs-table-bg: #16213e;
+    --bs-table-color: #eee;
+}
+
+[data-theme="dark"] .sidebar {
+    background: linear-gradient(180deg, #0f0f23 0%, #1a1a2e 100%);
+}
+</style>
+{% endblock %}

@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block title %}Create Order{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 fade-in">
+    <div>
+        <nav class="breadcrumb mb-1">
+            <a href="{{ url_for('orders.index') }}" class="text-decoration-none">Orders</a>
+            <span class="text-muted mx-2">/</span>
+            <span class="active">Create New Order</span>
+        </nav>
+        <h2 class="mb-1 gradient-text"><i class="bi bi-cart3"></i> Create New Order</h2>
+        <p class="text-muted mb-0">Request raw materials from suppliers</p>
+    </div>
+    <div>
+        <a href="{{ url_for('orders.index') }}" class="btn btn-outline-secondary glass-btn">
+            <i class="bi bi-x-lg"></i>
+            Cancel
+        </a>
+    </div>
+</div>
+
+<form method="POST" action="{{ url_for('orders.create') }}">
+    <div class="row g-4">
+        <!-- Order Details -->
+        <div class="col-lg-8">
+            <div class="card glass-card mb-4 fade-in">
+                <div class="card-header">
+                    <i class="bi bi-file-text"></i> Order Details
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Temperature Zone Required *</label>
+                        <select class="form-select glass-input" name="temperature_zone" required>
+                            <option value="">Select temperature zone...</option>
+                            <option value="refrigerated">Refrigerated (2–8°C)</option>
+                            <option value="frozen">Frozen (-20°C)</option>
+                            <option value="ultra_cold">Ultra-Cold (-70°C)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Required Certifications</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="required_certifications" value="GMP" id="certGMP">
+                                <label class="form-check-label" for="certGMP">GMP</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="required_certifications" value="FDA" id="certFDA">
+                                <label class="form-check-label" for="certFDA">FDA</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="required_certifications" value="ISO" id="certISO">
+                                <label class="form-check-label" for="certISO">ISO</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="required_certifications" value="EMA" id="certEMA">
+                                <label class="form-check-label" for="certEMA">EMA</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Delivery Deadline</label>
+                        <input type="date" class="form-control glass-input" name="delivery_deadline">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Priority</label>
+                        <select class="form-select glass-input" name="priority">
+                            <option value="standard">Standard</option>
+                            <option value="urgent">Urgent</option>
+                            <option value="economy">Economy</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Order Items -->
+            <div class="card glass-card mb-4 fade-in">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-box-seam"></i> Order Items</span>
+                    <button type="button" class="btn btn-sm btn-primary glass-btn" onclick="addItem()">
+                        <i class="bi bi-plus-lg"></i>
+                        Add Item
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="itemsContainer">
+                        <div class="item-row mb-3 p-3 glass-card">
+                            <div class="row g-2">
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control glass-input" name="product_name[]" placeholder="Product name" required>
+                                </div>
+                                <div class="col-md-2">
+                                    <input type="number" class="form-control glass-input" name="quantity[]" placeholder="Qty" min="1" required>
+                                </div>
+                                <div class="col-md-2">
+                                    <select class="form-select glass-input" name="unit[]">
+                                        <option value="units">Units</option>
+                                        <option value="kg">kg</option>
+                                        <option value="g">g</option>
+                                        <option value="L">L</option>
+                                        <option value="mL">mL</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-sm btn-danger glass-btn" onclick="removeItem(this)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Shipping Information -->
+        <div class="col-lg-4">
+            <div class="card glass-card mb-4 fade-in">
+                <div class="card-header">
+                    <i class="bi bi-geo-alt"></i> Shipping Address
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Street Address</label>
+                        <textarea class="form-control glass-input" name="shipping_address" rows="2"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">City</label>
+                        <input type="text" class="form-control glass-input" name="shipping_city">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Country</label>
+                        <input type="text" class="form-control glass-input" name="shipping_country">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Summary -->
+            <div class="card glass-card fade-in">
+                <div class="card-header">
+                    <i class="bi bi-info-circle"></i> Order Summary
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <div class="display-4" id="itemCount">1</div>
+                        <small class="text-muted">Items</small>
+                    </div>
+                    <hr>
+                    <p class="text-muted small mb-2">
+                        <i class="bi bi-info-circle"></i> After submission, our smart matching system will find the best suppliers for your requirements.
+                    </p>
+                    <button type="submit" class="btn btn-primary w-100 glass-btn">
+                        <i class="bi bi-check-lg"></i>
+                        Create Order
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function addItem() {
+    const container = document.getElementById('itemsContainer');
+    const newItem = document.createElement('div');
+    newItem.className = 'item-row mb-3 p-3 glass-card fade-in';
+    newItem.innerHTML = `
+        <div class="row g-2">
+            <div class="col-md-6">
+                <input type="text" class="form-control glass-input" name="product_name[]" placeholder="Product name" required>
+            </div>
+            <div class="col-md-2">
+                <input type="number" class="form-control glass-input" name="quantity[]" placeholder="Qty" min="1" required>
+            </div>
+            <div class="col-md-2">
+                <select class="form-select glass-input" name="unit[]">
+                    <option value="units">Units</option>
+                    <option value="kg">kg</option>
+                    <option value="g">g</option>
+                    <option value="L">L</option>
+                    <option value="mL">mL</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-sm btn-danger glass-btn" onclick="removeItem(this)">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        </div>
+    `;
+    container.appendChild(newItem);
+    updateCount();
+}
+
+function removeItem(button) {
+    const rows = document.querySelectorAll('.item-row');
+    if (rows.length > 1) {
+        button.closest('.item-row').remove();
+        updateCount();
+    } else {
+        alert('You need at least one item in your order.');
+    }
+}
+
+function updateCount() {
+    const count = document.querySelectorAll('.item-row').length;
+    document.getElementById('itemCount').textContent = count;
+}
+</script>
+{% endblock %}

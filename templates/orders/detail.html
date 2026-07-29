@@ -1,0 +1,317 @@
+{% extends "base.html" %}
+
+{% block title %}Order {{ order.order_number }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 fade-in">
+    <div>
+        <nav class="breadcrumb mb-1">
+            <a href="{{ url_for('orders.index') }}" class="text-decoration-none">Orders</a>
+            <span class="text-muted mx-2">/</span>
+            <span class="active">{{ order.order_number }}</span>
+        </nav>
+        <h2 class="mb-1 gradient-text">{{ order.order_number }}</h2>
+        <p class="text-muted mb-0">{{ order.product_name if order.items.first() else 'Order Details' }}</p>
+    </div>
+    <div>
+        {% if order.status.value == 'draft' %}
+        <a href="{{ url_for('orders.approve_order', order_id=order.id) }}" class="btn btn-primary glass-btn">
+            <i class="bi bi-check-lg"></i>
+            Submit for Approval
+        </a>
+        {% elif order.status.value == 'pending_approval' and current_user.role.value in ['tenant_admin', 'operations_admin'] %}
+        <a href="{{ url_for('orders.approve_order', order_id=order.id) }}" class="btn btn-success glass-btn">
+            <i class="bi bi-check-lg"></i>
+            Approve Order
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Order Information -->
+    <div class="col-lg-8">
+        <div class="card glass-card mb-4 fade-in">
+            <div class="card-header">
+                <i class="bi bi-file-text"></i> Order Information
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="text-muted small">STATUS</label>
+                        <div>
+                            <span class="badge badge-{{ 'secondary' if order.status.value == 'draft' else 'warning' if order.status.value == 'pending_approval' else 'success' if order.status.value in ['approved', 'processing'] else 'primary' }}">
+                                {{ order.status.value|replace('_', ' ')|title }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small">CREATED</label>
+                        <div>{{ order.created_at.strftime('%b %d, %Y') }}</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small">TEMPERATURE ZONE</label>
+                        <div>
+                            <span class="badge badge-temp-{{ order.temperature_zone or 'refrigerated' }}">
+                                <i class="bi bi-thermometer-half"></i>
+                                {{ (order.temperature_zone or 'Refrigerated')|title }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small">PRIORITY</label>
+                        <div>{{ order.priority|title }}</div>
+                    </div>
+                    {% if order.required_certifications %}
+                    <div class="col-12">
+                        <label class="text-muted small">REQUIRED CERTIFICATIONS</label>
+                        <div class="d-flex flex-wrap gap-1 mt-1">
+                            {% for cert in order.required_certifications %}
+                            <span class="badge badge-primary">{{ cert }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Items -->
+        <div class="card glass-card mb-4 fade-in">
+            <div class="card-header">
+                <i class="bi bi-box-seam"></i> Order Items ({{ items|length }})
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Unit</th>
+                                <th>Supplier</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                            <tr>
+                                <td>
+                                    <strong>{{ item.product_name }}</strong>
+                                    {% if item.description %}
+                                    <br><small class="text-muted">{{ item.description[:50] }}{% if item.description|length > 50 %}...{% endif %}</small>
+                                    {% endif %}
+                                </td>
+                                <td>{{ item.quantity }}</td>
+                                <td>{{ item.unit }}</td>
+                                <td>
+                                    {% if item.supplier %}
+                                    {{ item.supplier.name }}
+                                    {% else %}
+                                    <span class="text-muted">Not assigned</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge badge-{{ 'success' if item.status == 'confirmed' else 'warning' if item.status == 'pending' else 'secondary' }}">
+                                        {{ item.status|title }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        {% if match_scores %}
+        <!-- Supplier Matching -->
+        <div class="card glass-card mb-4 fade-in">
+            <div class="card-header">
+                <i class="bi bi-stars"></i> Recommended Suppliers
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-3">
+                    <i class="bi bi-info-circle"></i>
+                    Our smart matching algorithm has found the best suppliers for your requirements.
+                </p>
+                <div class="row g-3">
+                    {% for match in match_scores[:3] %}
+                    <div class="col-md-4">
+                        <div class="card glass-card hover-lift">
+                            <div class="card-body text-center">
+                                <div class="user-avatar mx-auto mb-2" style="width: 48px; height: 48px;">
+                                    {{ match.supplier.name[0] }}
+                                </div>
+                                <h6 class="mb-1">{{ match.supplier.name }}</h6>
+                                <small class="text-muted d-block mb-2">{{ match.supplier.country }}</small>
+                                <div class="mb-2">
+                                    <div class="text-warning">
+                                        {% for i in range(5) %}
+                                            {% if i < match.supplier.rating|int %}
+                                                <i class="bi bi-star-fill"></i>
+                                            {% else %}
+                                                <i class="bi bi-star"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <span class="badge badge-success">
+                                        Match: {{ match.match_score.percentage }}%
+                                    </span>
+                                </div>
+                                <form method="POST" action="{{ url_for('orders.select_supplier', order_id=order.id) }}">
+                                    <input type="hidden" name="supplier_id" value="{{ match.supplier.id }}">
+                                    <button type="submit" class="btn btn-sm btn-primary glass-btn w-100">
+                                        <i class="bi bi-check-lg"></i>
+                                        Select
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Supplier Info -->
+        {% if order.selected_supplier %}
+        <div class="card glass-card mb-4 fade-in">
+            <div class="card-header">
+                <i class="bi bi-building"></i> Selected Supplier
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <div class="user-avatar mx-auto mb-2" style="width: 64px; height: 64px; font-size: 1.5rem;">
+                        {{ order.selected_supplier.name[0] }}
+                    </div>
+                    <h5>{{ order.selected_supplier.name }}</h5>
+                    <small class="text-muted">{{ order.selected_supplier.country }}</small>
+                </div>
+                <div class="mb-2">
+                    <small class="text-muted">Rating</small>
+                    <div class="text-warning">
+                        {% for i in range(5) %}
+                            {% if i < order.selected_supplier.rating|int %}
+                                <i class="bi bi-star-fill"></i>
+                            {% else %}
+                                <i class="bi bi-star"></i>
+                            {% endif %}
+                        {% endfor %}
+                        {{ '%.1f'|format(order.selected_supplier.rating) }}
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <small class="text-muted">On-Time Delivery</small>
+                    <div class="text-success">{{ '%.1f'|format(order.selected_supplier.on_time_delivery_rate) }}%</div>
+                </div>
+                <div class="mb-3">
+                    <small class="text-muted">Certifications</small>
+                    <div class="d-flex flex-wrap gap-1 mt-1">
+                        {% for cert in order.selected_supplier.certifications or [] %}
+                        <span class="badge badge-primary">{{ cert }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <a href="{{ url_for('orders.supplier_detail', supplier_id=order.selected_supplier.id) }}" class="btn btn-outline-secondary glass-btn w-100">
+                    <i class="bi bi-eye"></i>
+                    View Profile
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Shipping Address -->
+        {% if order.shipping_address %}
+        <div class="card glass-card mb-4 fade-in">
+            <div class="card-header">
+                <i class="bi bi-geo-alt"></i> Shipping Address
+            </div>
+            <div class="card-body">
+                <p>{{ order.shipping_address }}</p>
+                {% if order.shipping_city %}
+                <p>{{ order.shipping_city }}, {{ order.shipping_country }}</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Timeline -->
+        <div class="card glass-card fade-in">
+            <div class="card-header">
+                <i class="bi bi-clock-history"></i> Order Timeline
+            </div>
+            <div class="card-body">
+                <div class="timeline">
+                    <div class="timeline-item {% if order.created_at %}completed{% endif %}">
+                        <div class="timeline-item-content">
+                            <strong>Order Created</strong>
+                            <p class="small text-muted mb-0">{{ order.created_at.strftime('%b %d, %Y') if order.created_at else '-' }}</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item {% if order.status.value not in ['draft', 'pending_approval'] %}completed{% elif order.status.value == 'pending_approval' %}current{% endif %}">
+                        <div class="timeline-item-content">
+                            <strong>Approval</strong>
+                            <p class="small text-muted mb-0">
+                                {% if order.status.value in ['draft', 'pending_approval'] %}
+                                Pending
+                                {% else %}
+                                Approved
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="timeline-item {% if order.status.value in ['supplier_confirmed', 'processing'] %}completed{% elif order.status.value == 'supplier_matching' %}current{% endif %}">
+                        <div class="timeline-item-content">
+                            <strong>Supplier Matching</strong>
+                            <p class="small text-muted mb-0">
+                                {% if order.status.value == 'supplier_matching' %}
+                                In Progress
+                                {% elif order.status.value in ['draft', 'pending_approval'] %}
+                                Waiting
+                                {% else %}
+                                Complete
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="timeline-item {% if order.status.value in ['processing', 'in_transit', 'delivered'] %}completed{% elif order.status.value == 'supplier_confirmed' %}current{% endif %}">
+                        <div class="timeline-item-content">
+                            <strong>Processing</strong>
+                            <p class="small text-muted mb-0">
+                                {% if order.status.value == 'processing' %}
+                                In Progress
+                                {% elif order.status.value in ['draft', 'pending_approval', 'supplier_matching', 'supplier_confirmed'] %}
+                                Waiting
+                                {% else %}
+                                Complete
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="timeline-item {% if order.status.value == 'delivered' %}completed{% elif order.status.value == 'in_transit' %}current{% endif %}">
+                        <div class="timeline-item-content">
+                            <strong>Delivery</strong>
+                            <p class="small text-muted mb-0">
+                                {% if order.status.value == 'delivered' %}
+                                Delivered
+                                {% elif order.status.value == 'in_transit' %}
+                                In Transit
+                                {% else %}
+                                Pending
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

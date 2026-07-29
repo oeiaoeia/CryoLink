@@ -1,0 +1,619 @@
+{% extends "base.html" %}
+
+{% block title %}Operations Control Tower{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">🌍 Operations Control Tower</h2>
+        <p class="text-muted mb-0">Global cold-chain operations overview</p>
+    </div>
+    <div>
+        <span class="badge badge-success">
+            <i class="bi bi-circle-fill" style="font-size: 0.5rem;"></i>
+            System Healthy
+        </span>
+    </div>
+</div>
+
+<!-- Stats Row -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="stats-card glass-card hover-lift fade-in">
+            <div class="stat-icon primary">
+                <i class="bi bi-building"></i>
+            </div>
+            <div class="stat-value pulse">{{ total_tenants }}</div>
+            <div class="stat-label">Active Tenants</div>
+            <div class="stat-change positive">
+                <i class="bi bi-arrow-up"></i>
+                All operational
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stats-card glass-card hover-lift fade-in" style="animation-delay: 0.1s;">
+            <div class="stat-icon primary">
+                <i class="bi bi-box-seam"></i>
+            </div>
+            <div class="stat-value pulse">{{ active_shipments }}</div>
+            <div class="stat-label">Active Shipments</div>
+            <div class="stat-change positive">
+                <i class="bi bi-arrow-up"></i>
+                {{ total_shipments }} total
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stats-card glass-card hover-lift fade-in" style="animation-delay: 0.2s;">
+            <div class="stat-icon warning">
+                <i class="bi bi-exclamation-triangle"></i>
+            </div>
+            <div class="stat-value pulse">{{ active_alerts }}</div>
+            <div class="stat-label">Active Alerts</div>
+            <div class="stat-change negative">
+                <i class="bi bi-exclamation-circle"></i>
+                {{ critical_alerts }} critical
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stats-card glass-card hover-lift fade-in" style="animation-delay: 0.3s;">
+            <div class="stat-icon success">
+                <i class="bi bi-truck"></i>
+            </div>
+            <div class="stat-value pulse">{{ carrier_performance }}</div>
+            <div class="stat-label">Carrier Performance</div>
+            <div class="stat-change positive">
+                <i class="bi bi-arrow-up"></i>
+                +2.3 pts
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Map and Alerts Row -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-8">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-globe"></i> Live Global Shipment Map</span>
+                <div class="d-flex gap-2">
+                    <span class="badge badge-success"><i class="bi bi-circle-fill" style="font-size: 0.4rem;"></i> Normal</span>
+                    <span class="badge badge-warning"><i class="bi bi-circle-fill" style="font-size: 0.4rem;"></i> Warning</span>
+                    <span class="badge badge-danger"><i class="bi bi-circle-fill" style="font-size: 0.4rem;"></i> Critical</span>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div id="shipmentMap" style="height: 450px; width: 100%;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="bi bi-exclamation-triangle"></i> Risk Alerts
+            </div>
+            <div class="card-body p-0">
+                <div class="p-3" style="max-height: 400px; overflow-y: auto;">
+                    {% for alert in recent_alerts %}
+                    <div class="alert-card {{ alert.severity.value }}" style="background: var(--alert-bg); border-left-color: {{ alert.get_color() }}; color: var(--alert-color);">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <strong class="small" style="color: var(--alert-title-color);">{{ alert.get_icon() }} {{ alert.title }}</strong>
+                            <span class="badge badge-{{ 'danger' if alert.severity.value == 'critical' else 'warning' if alert.severity.value == 'high' else 'secondary' }}" style="background: var(--badge-bg); color: var(--badge-color);">
+                                {{ alert.severity.value }}
+                            </span>
+                        </div>
+                        <p class="small" style="color: var(--alert-text-color); margin-bottom: 8px;">{{ alert.message }}</p>
+                        {% if alert.shipment %}
+                        <p class="small" style="color: var(--alert-text-color); margin-bottom: 8px;">
+                            <i class="bi bi-box-seam"></i>
+                            {{ alert.shipment.shipment_number }}
+                        </p>
+                        {% endif %}
+                        <div class="d-flex gap-2">
+                            <a href="{{ url_for('shipments.detail', shipment_id=alert.shipment_id) if alert.shipment_id else '#' }}" class="btn btn-sm btn-primary">
+                                View
+                            </a>
+                            <button class="btn btn-sm btn-{{ 'danger' if alert.severity.value == 'critical' else 'warning' }}">
+                                Act Now
+                            </button>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5 text-muted">
+                        <i class="bi bi-check-circle display-4"></i>
+                        <p class="mt-2">No active alerts</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tenant Overview and Shipments by Status -->
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-building"></i> Tenant Overview</span>
+                <a href="{{ url_for('dashboard.tenant_management') }}" class="btn btn-sm btn-link">View All</a>
+            </div>
+            <div class="card-body">
+                {% for item in tenant_stats %}
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-3 {% if not loop.last %}border-bottom{% endif %}" style="cursor: pointer;" onclick="viewTenantDetails({{ item.tenant.id }}, '{{ item.tenant.name }}')">
+                    <div>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="user-avatar" style="width: 32px; height: 32px; font-size: 0.75rem;">
+                                {{ item.tenant.name[0] }}
+                            </div>
+                            <div>
+                                <strong>{{ item.tenant.name }}</strong>
+                                <small class="text-muted d-block">{{ item.tenant.domain }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <i class="bi bi-box-seam text-primary"></i>
+                            <span class="fw-semibold">{{ item.stats.active_shipments }}</span>
+                            <small class="text-muted">active</small>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-cart text-success"></i>
+                            <span class="fw-semibold">{{ item.stats.pending_orders }}</span>
+                            <small class="text-muted">pending</small>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-bar-chart"></i> Shipments by Status
+            </div>
+            <div class="card-body">
+                <canvas id="shipmentsChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Store tenant data for modal -->
+<script>
+window.tenantData = {
+    {% for item in tenant_stats %}
+    {{ item.tenant.id }}: {
+        id: '{{ item.tenant.tenant_id }}',
+        domain: '{{ item.tenant.domain }}',
+        email: '{{ item.tenant.email }}',
+        country: '{{ item.tenant.country or "N/A" }}',
+        status: '{{ item.tenant.status.value|title }}',
+        shipments: {{ item.stats.active_shipments }},
+        orders: {{ item.stats.pending_orders }},
+        alerts: 0,
+        docs: {{ item.stats.total_documents }}
+    },
+    {% endfor %}
+};
+</script>
+
+<!-- Leaflet CSS for Map -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+// Shipment data from backend
+const shipmentData = [
+    {% for shipment in map_shipments %}
+    {
+        id: {{ shipment.id }},
+        number: '{{ shipment.shipment_number }}',
+        product: '{{ shipment.product_name[:30] }}{% if shipment.product_name|length > 30 %}...{% endif %}',
+        status: '{{ shipment.status.value }}',
+        risk_score: {{ shipment.risk_score }},
+        temp: {{ shipment.get_current_temperature() or 0 }},
+        lat: {{ (shipment.current_coordinates.lat if shipment.current_coordinates else 40.7128) }},
+        lng: {{ (shipment.current_coordinates.lng if shipment.current_coordinates else -74.0060) }},
+        origin: '{{ shipment.origin_city }}, {{ shipment.origin_country }}',
+        destination: '{{ shipment.destination_city }}, {{ shipment.destination_country }}',
+        progress: {{ shipment.progress_percentage }}
+    },
+    {% endfor %}
+];
+
+// If no real coordinates, use sample data for demo
+const demoShipments = [
+    { id: 1, number: 'S-20260307-0001', product: 'mRNA Vaccine Raw Material', status: 'in_transit', risk_score: 25, temp: 4.2, lat: 35.6762, lng: 139.6503, origin: 'Singapore', destination: 'Boston', progress: 68 },
+    { id: 2, number: 'S-20260307-0002', product: 'Biologic Reagent', status: 'in_transit', risk_score: 35, temp: -19.8, lat: 47.3769, lng: 8.5417, origin: 'Berlin', destination: 'Zurich', progress: 92 },
+    { id: 3, number: 'S-20260307-0003', product: 'Cell Therapy Material', status: 'in_transit', risk_score: 45, temp: -72.5, lat: 50.1109, lng: 8.6821, origin: 'San Francisco', destination: 'Frankfurt', progress: 45 },
+    { id: 4, number: 'S-20260307-0004', product: 'Vaccine Adjuvant', status: 'delayed', risk_score: 65, temp: 9.8, lat: 19.0760, lng: 72.8777, origin: 'Mumbai', destination: 'Geneva', progress: 55 },
+    { id: 5, number: 'S-20260307-0005', product: 'Monoclonal Antibodies', status: 'in_transit', risk_score: 18, temp: 3.8, lat: 35.6895, lng: 139.6917, origin: 'Tokyo', destination: 'San Francisco', progress: 72 }
+];
+
+const shipments = shipmentData.length > 0 ? shipmentData : demoShipments;
+
+// Initialize map
+const map = L.map('shipmentMap').setView([20, 0], 2);
+
+// Add OpenStreetMap tiles
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+}).addTo(map);
+
+// Custom icons for shipment status
+function getShipmentIcon(riskScore) {
+    let color = 'green';
+    if (riskScore > 60) color = 'red';
+    else if (riskScore > 30) color = 'orange';
+    
+    return L.divIcon({
+        className: 'custom-div-icon',
+        html: `<div style="
+            background-color: ${color === 'green' ? '#00C853' : color === 'orange' ? '#FFB300' : '#D32F2F'};
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        "></div>`,
+        iconSize: [22, 22],
+        iconAnchor: [11, 11]
+    });
+}
+
+// Add shipment markers
+shipments.forEach(shipment => {
+    const marker = L.marker([shipment.lat, shipment.lng], {
+        icon: getShipmentIcon(shipment.risk_score)
+    }).addTo(map);
+    
+    // Popup content
+    const popupContent = `
+        <div style="min-width: 250px;">
+            <h6 style="margin-bottom: 8px; font-weight: 600;">${shipment.number}</h6>
+            <p style="margin: 4px 0; font-size: 13px;"><strong>Product:</strong> ${shipment.product}</p>
+            <p style="margin: 4px 0; font-size: 13px;"><strong>Route:</strong> ${shipment.origin} → ${shipment.destination}</p>
+            <p style="margin: 4px 0; font-size: 13px;"><strong>Temp:</strong> ${shipment.temp}°C</p>
+            <p style="margin: 4px 0; font-size: 13px;"><strong>Risk:</strong> 
+                <span style="color: ${shipment.risk_score <= 30 ? '#00C853' : shipment.risk_score <= 60 ? '#FFB300' : '#D32F2F'}; font-weight: 600;">
+                    ${shipment.risk_score}/100 (${shipment.risk_score <= 30 ? 'Low' : shipment.risk_score <= 60 ? 'Moderate' : 'High'})
+                </span>
+            </p>
+            <p style="margin: 4px 0; font-size: 13px;"><strong>Progress:</strong> ${shipment.progress}%</p>
+            <div style="margin-top: 8px;">
+                <a href="/shipments/${shipment.id}" style="
+                    display: inline-block;
+                    padding: 4px 12px;
+                    background-color: #0066CC;
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 4px;
+                    font-size: 12px;
+                    margin-right: 4px;
+                ">View Details</a>
+                <a href="/shipments/${shipment.id}/track" style="
+                    display: inline-block;
+                    padding: 4px 12px;
+                    background-color: #00C853;
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 4px;
+                    font-size: 12px;
+                ">Track Live</a>
+            </div>
+        </div>
+    `;
+    
+    marker.bindPopup(popupContent);
+});
+
+// Add legend
+const legend = L.control({ position: 'bottomright' });
+legend.onAdd = function(map) {
+    const div = L.DomUtil.create('div', 'legend');
+    updateLegendStyle(div);
+    div.innerHTML = `
+        <div style="font-weight: 700; margin-bottom: 10px; color: #1E293B; font-size: 13px;" class="legend-title">🔴 Risk Level</div>
+        <div style="display: flex; align-items: center; gap: 8px; margin: 6px 0;">
+            <div style="width: 14px; height: 14px; background: #00C853; border-radius: 50%; border: 2px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.3);"></div>
+            <span style="color: #1E293B; font-weight: 500;" class="legend-text">Low (0-30)</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; margin: 6px 0;">
+            <div style="width: 14px; height: 14px; background: #FFB300; border-radius: 50%; border: 2px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.3);"></div>
+            <span style="color: #1E293B; font-weight: 500;" class="legend-text">Moderate (31-60)</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; margin: 6px 0;">
+            <div style="width: 14px; height: 14px; background: #D32F2F; border-radius: 50%; border: 2px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.3);"></div>
+            <span style="color: #1E293B; font-weight: 500;" class="legend-text">High (61-100)</span>
+        </div>
+    `;
+    return div;
+};
+legend.addTo(map);
+
+// Update legend style based on theme
+function updateLegendStyle(div) {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (isDark) {
+        div.style.cssText = 'background: rgba(30, 41, 59, 0.95); padding: 12px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.4); font-size: 12px; backdrop-filter: blur(10px); border: 1px solid #475569;';
+    } else {
+        div.style.cssText = 'background: rgba(255, 255, 255, 0.95); padding: 12px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); font-size: 12px; backdrop-filter: blur(10px);';
+    }
+}
+
+// Update legend when theme changes
+const observer = new MutationObserver(function(mutations) {
+    document.querySelectorAll('.legend').forEach(function(legend) {
+        updateLegendStyle(legend);
+        legend.querySelectorAll('.legend-title').forEach(function(title) {
+            title.style.color = document.documentElement.getAttribute('data-theme') === 'dark' ? '#e2e8f0' : '#1E293B';
+        });
+        legend.querySelectorAll('.legend-text').forEach(function(text) {
+            text.style.color = document.documentElement.getAttribute('data-theme') === 'dark' ? '#e2e8f0' : '#1E293B';
+        });
+    });
+});
+
+observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-theme']
+});
+
+// Auto-refresh map data every 30 seconds
+setTimeout(function() {
+    location.reload();
+}, 30000);
+</script>
+
+<style>
+.leaflet-popup-content-wrapper {
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+}
+.leaflet-popup-content {
+    margin: 12px;
+    line-height: 1.5;
+}
+.custom-div-icon {
+    background: transparent;
+    border: none;
+}
+</style>
+
+<script>
+// Shipments by Status Chart - Improved with numbers inside
+const ctx = document.getElementById('shipmentsChart').getContext('2d');
+const shipmentsChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+        labels: [{% for status, count in shipments_by_status %}'{{ status.value|replace("_", " ")|title }}'{% if not loop.last %}, {% endif %}{% endfor %}],
+        datasets: [{
+            data: [{% for status, count in shipments_by_status %}{{ count }}{% if not loop.last %}, {% endif %}{% endfor %}],
+            backgroundColor: [
+                gradientBlue,
+                gradientGreen,
+                gradientAmber,
+                gradientRed,
+                gradientPurple,
+                gradientGray
+            ],
+            borderWidth: 3,
+            borderRadius: 10
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '60%',
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    padding: 15,
+                    usePointStyle: true,
+                    pointStyle: 'circle',
+                    font: {
+                        size: 11,
+                        weight: '500'
+                    }
+                }
+            },
+            tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                padding: 12,
+                titleFont: { size: 13, weight: '600' },
+                bodyFont: { size: 12 },
+                callbacks: {
+                    label: function(context) {
+                        const label = context.label || '';
+                        const value = context.parsed || 0;
+                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                        const percentage = ((value / total) * 100).toFixed(1);
+                        return label + ': ' + value + ' (' + percentage + '%)';
+                    }
+                }
+            }
+        }
+    },
+    plugins: [{
+        id: 'textInside',
+        beforeDraw: function(chart) {
+            const { width, height, ctx } = chart;
+            ctx.restore();
+            
+            const total = chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+            const fontSize = (height / 200).toFixed(2);
+            ctx.font = 'bold ' + fontSize + 'em Inter, sans-serif';
+            ctx.textBaseline = 'middle';
+            ctx.textAlign = 'center';
+            
+            // Draw total in center
+            ctx.fillStyle = '#1E293B';
+            ctx.fillText(total, width / 2, height / 2 - 10);
+            
+            // Draw "Total" label
+            ctx.font = fontSize + 'em Inter, sans-serif';
+            ctx.fillStyle = '#64748B';
+            ctx.fillText('Total', width / 2, height / 2 + 15);
+
+            ctx.save();
+        }
+    }]
+});
+</script>
+
+<!-- Tenant Details Modal -->
+<div class="modal fade" id="tenantDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tenantModalTitle">
+                    <i class="bi bi-building"></i> <span id="tenantModalName"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <i class="bi bi-info-circle"></i> Tenant Information
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="text-muted small">TENANT ID</label>
+                                    <div class="fw-semibold" id="tenantModalId"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="text-muted small">DOMAIN</label>
+                                    <div class="fw-semibold" id="tenantModalDomain"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="text-muted small">EMAIL</label>
+                                    <div class="fw-semibold" id="tenantModalEmail"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="text-muted small">COUNTRY</label>
+                                    <div class="fw-semibold" id="tenantModalCountry"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="text-muted small">STATUS</label>
+                                    <div><span class="badge badge-success" id="tenantModalStatus"></span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <i class="bi bi-bar-chart"></i> Activity Overview
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-6">
+                                        <div class="stats-card text-center p-3">
+                                            <div class="stat-icon primary mx-auto mb-2">
+                                                <i class="bi bi-box-seam"></i>
+                                            </div>
+                                            <div class="stat-value" id="tenantModalShipments"></div>
+                                            <div class="stat-label">Active Shipments</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="stats-card text-center p-3">
+                                            <div class="stat-icon success mx-auto mb-2">
+                                                <i class="bi bi-cart3"></i>
+                                            </div>
+                                            <div class="stat-value" id="tenantModalOrders"></div>
+                                            <div class="stat-label">Pending Orders</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="stats-card text-center p-3">
+                                            <div class="stat-icon warning mx-auto mb-2">
+                                                <i class="bi bi-exclamation-triangle"></i>
+                                            </div>
+                                            <div class="stat-value" id="tenantModalAlerts"></div>
+                                            <div class="stat-label">Active Alerts</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="stats-card text-center p-3">
+                                            <div class="stat-icon primary mx-auto mb-2">
+                                                <i class="bi bi-file-earmark-text"></i>
+                                            </div>
+                                            <div class="stat-value" id="tenantModalDocs"></div>
+                                            <div class="stat-label">Documents</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="#" class="btn btn-primary" id="tenantModalViewAll">
+                    <i class="bi bi-eye"></i>
+                    View All Data
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Tenant details function
+function viewTenantDetails(tenantId, tenantName) {
+    // Set tenant name in modal
+    document.getElementById('tenantModalName').textContent = tenantName;
+    
+    // Fetch tenant data from the page data attributes or use defaults
+    const tenantData = window.tenantData || {};
+    const data = tenantData[tenantId] || { 
+        id: 'TNT00' + tenantId, 
+        domain: 'tenant.com', 
+        email: 'contact@tenant.com', 
+        country: 'N/A', 
+        status: 'Active', 
+        shipments: 0, 
+        orders: 0, 
+        alerts: 0, 
+        docs: 0 
+    };
+    
+    // Populate modal
+    document.getElementById('tenantModalId').textContent = data.id;
+    document.getElementById('tenantModalDomain').textContent = data.domain;
+    document.getElementById('tenantModalEmail').textContent = data.email;
+    document.getElementById('tenantModalCountry').textContent = data.country;
+    document.getElementById('tenantModalStatus').textContent = data.status;
+    document.getElementById('tenantModalShipments').textContent = data.shipments;
+    document.getElementById('tenantModalOrders').textContent = data.orders;
+    document.getElementById('tenantModalAlerts').textContent = data.alerts;
+    document.getElementById('tenantModalDocs').textContent = data.docs;
+    
+    // Set view all link
+    document.getElementById('tenantModalViewAll').href = '/shipments?tenant=' + tenantId;
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('tenantDetailsModal'));
+    modal.show();
+}
+</script>
+{% endblock %}

@@ -1,0 +1,30 @@
+# CryoLink - Cold-Chain Supply & Logistics Control Tower
+# Core Framework
+Flask==3.0.0
+Flask-SQLAlchemy==3.1.1
+Flask-Login==0.6.3
+Flask-WTF==1.2.1
+Werkzeug==3.0.1
+
+# Database - Use latest for Python 3.13 compatibility
+SQLAlchemy>=2.0.36
+psycopg2-binary>=2.9.9
+
+# Authentication & Security
+Flask-Bcrypt==1.0.1
+itsdangerous==2.1.2
+python-dotenv==1.0.0
+
+# Data Validation
+WTForms==3.1.1
+email-validator==2.1.0
+
+# API & Serialization
+Flask-RESTful==0.3.10
+marshmallow==3.20.1
+Flask-Marshmallow==0.15.0
+
+# Utilities
+python-dateutil==2.8.2
+pytz==2023.3
+requests==2.31.0

@@ -1,0 +1,310 @@
+{% extends "base.html" %}
+
+{% block title %}{{ shipment.shipment_number }}{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <nav class="breadcrumb mb-1">
+            <a href="{{ url_for('shipments.index') }}" class="text-decoration-none">Shipments</a>
+            <span class="text-muted mx-2">/</span>
+            <span>{{ shipment.shipment_number }}</span>
+        </nav>
+        <h2 class="mb-1">
+            {{ shipment.product_name }}
+            <span class="badge badge-temp-{{ shipment.temp_zone }} ms-2">
+                <i class="bi bi-thermometer-half"></i>
+                {{ shipment.temp_min }}°C to {{ shipment.temp_max }}°C
+            </span>
+        </h2>
+        <p class="text-muted mb-0">
+            <i class="bi bi-geo-alt"></i> {{ shipment.origin_city }}, {{ shipment.origin_country }}
+            <i class="bi bi-arrow-right mx-1"></i>
+            {{ shipment.destination_city }}, {{ shipment.destination_country }}
+            {% if shipment.estimated_arrival %}
+            | <i class="bi bi-clock"></i> ETA: {{ shipment.estimated_arrival.strftime('%b %d, %Y %H:%M') }}
+            {% endif %}
+        </p>
+    </div>
+    <div class="d-flex gap-2">
+        {% if shipment.status.value == 'draft' %}
+        <a href="{{ url_for('shipments.edit', shipment_id=shipment.id) }}" class="btn btn-secondary">
+            <i class="bi bi-pencil"></i>
+            Edit
+        </a>
+        <a href="{{ url_for('shipments.start_shipment', shipment_id=shipment.id) }}" class="btn btn-primary">
+            <i class="bi bi-play"></i>
+            Start Shipment
+        </a>
+        {% elif shipment.status.value == 'in_transit' %}
+        <a href="{{ url_for('shipments.track', shipment_id=shipment.id) }}" class="btn btn-primary">
+            <i class="bi bi-geo-alt"></i>
+            Track Live
+        </a>
+        <a href="{{ url_for('shipments.complete_shipment', shipment_id=shipment.id) }}" class="btn btn-success">
+            <i class="bi bi-check-lg"></i>
+            Mark Delivered
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Status Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <div class="text-muted small mb-2">CURRENT TEMPERATURE</div>
+                <div class="display-4 mb-2">
+                    {% if shipment.get_current_temperature() %}
+                    {{ '%0.1f'|format(shipment.get_current_temperature()) }}°C
+                    {% else %}
+                    --
+                    {% endif %}
+                </div>
+                <span class="badge {% if shipment.get_current_temperature() and shipment.temp_min <= shipment.get_current_temperature() <= shipment.temp_max %}badge-success{% else %}badge-warning{% endif %}">
+                    {% if shipment.get_current_temperature() and shipment.temp_min <= shipment.get_current_temperature() <= shipment.temp_max %}
+                    <i class="bi bi-check-circle"></i> Within Range
+                    {% else %}
+                    <i class="bi bi-exclamation-circle"></i> Check Range
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <div class="text-muted small mb-2">RISK LEVEL</div>
+                <div class="display-4 mb-2 {% if shipment.risk_score <= 30 %}text-success{% elif shipment.risk_score <= 60 %}text-warning{% else %}text-danger{% endif %}">
+                    {% if shipment.risk_score <= 30 %}🟢{% elif shipment.risk_score <= 60 %}🟡{% else %}🔴{% endif %}
+                    {{ shipment.risk_score }}/100
+                </div>
+                <span class="badge badge-{{ 'success' if shipment.risk_score <= 30 else 'warning' if shipment.risk_score <= 60 else 'danger' }}">
+                    {{ shipment.risk_level|title }}
+                </span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <div class="text-muted small mb-2">INTEGRITY SCORE</div>
+                <div class="display-4 mb-2 {% if shipment.integrity_score >= 90 %}text-success{% elif shipment.integrity_score >= 70 %}text-warning{% else %}text-danger{% endif %}">
+                    {{ shipment.integrity_score }}/100
+                </div>
+                <span class="badge badge-{{ 'success' if shipment.integrity_score >= 90 else 'warning' if shipment.integrity_score >= 70 else 'danger' }}">
+                    {{ shipment.integrity_level|title }}
+                </span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <div class="text-muted small mb-2">PROGRESS</div>
+                <div class="display-4 mb-2">{{ '%0.0f'|format(shipment.progress_percentage) }}%</div>
+                <div class="progress" style="height: 8px;">
+                    <div class="progress-bar progress-bar-success" style="width: {{ shipment.progress_percentage }}%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Temperature Chart -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-thermometer-half"></i> Temperature History (Last 24 Hours)</span>
+                <div class="d-flex gap-2">
+                    <span class="badge badge-success">Within Range</span>
+                    <span class="badge badge-danger">Excursion</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="chart-container" style="height: 300px;">
+                    <canvas id="tempChart"></canvas>
+                </div>
+                <div class="d-flex justify-content-between mt-3 small text-muted">
+                    <span>🟢 Within Range: {{ compliance_rate }}%</span>
+                    <span>🔴 Excursions: {{ excursions|length }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Journey Timeline -->
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="bi bi-map"></i> Journey Timeline
+            </div>
+            <div class="card-body">
+                {% if shipment.route and shipment.route.legs %}
+                <div class="timeline">
+                    {% for leg in shipment.route.legs %}
+                    <div class="timeline-item {% if leg.status == 'completed' %}completed{% elif leg.status == 'in_progress' %}current{% endif %}">
+                        <div class="timeline-item-content">
+                            <strong>{{ leg.name }}</strong>
+                            <p class="small text-muted mb-1">{{ leg.location }}</p>
+                            <span class="badge badge-{{ 'success' if leg.status == 'completed' else 'primary' if leg.status == 'in_progress' else 'secondary' }}">
+                                {{ leg.status|replace('_', ' ')|title }}
+                            </span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5 text-muted">
+                    <i class="bi bi-map display-4"></i>
+                    <p class="mt-2">Route not yet defined</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alerts and Documents -->
+<div class="row g-4 mt-4">
+    <!-- Alerts -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-exclamation-triangle"></i> Alerts ({{ alerts|length }})
+            </div>
+            <div class="card-body p-0">
+                {% for alert in alerts %}
+                <div class="p-3 border-bottom {% if loop.last %}border-0{% endif %}">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <strong>{{ alert.get_icon() }} {{ alert.title }}</strong>
+                        <span class="badge badge-{{ 'danger' if alert.severity.value == 'critical' else 'warning' if alert.severity.value == 'high' else 'secondary' }}">
+                            {{ alert.severity.value }}
+                        </span>
+                    </div>
+                    <p class="small text-muted mb-2">{{ alert.message }}</p>
+                    {% if alert.suggested_actions %}
+                    <div class="d-flex gap-2">
+                        {% for action in alert.suggested_actions[:2] %}
+                        <button class="btn btn-sm btn-outline-primary">{{ action }}</button>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div class="text-center py-4 text-muted">
+                    <i class="bi bi-check-circle display-4"></i>
+                    <p class="mt-2 mb-0">No alerts for this shipment</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Documents -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-file-earmark-text"></i> Documents ({{ documents|length }})</span>
+                <a href="{{ url_for('compliance.shipment_documents', shipment_id=shipment.id) }}" class="btn btn-sm btn-link">View All</a>
+            </div>
+            <div class="card-body p-0">
+                {% for doc in documents[:5] %}
+                <div class="p-3 border-bottom {% if loop.last %}border-0{% endif %}">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <strong class="small">{{ doc.title }}</strong>
+                            <p class="small text-muted mb-1">{{ doc.document_type.value|replace('_', ' ')|title }}</p>
+                            <small class="text-muted">
+                                {% if doc.is_valid %}
+                                <span class="text-success"><i class="bi bi-check-circle"></i> Valid</span>
+                                {% elif doc.is_expired %}
+                                <span class="text-danger"><i class="bi bi-x-circle"></i> Expired</span>
+                                {% else %}
+                                <span class="text-warning"><i class="bi bi-clock"></i> Pending</span>
+                                {% endif %}
+                            </small>
+                        </div>
+                        <a href="{{ url_for('compliance.document_detail', doc_id=doc.id) }}" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-download"></i>
+                        </a>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center py-4 text-muted">
+                    <i class="bi bi-file-earmark display-4"></i>
+                    <p class="mt-2 mb-0">No documents yet</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Temperature Chart
+const ctx = document.getElementById('tempChart').getContext('2d');
+const tempData = {
+    labels: [{% for log in temp_history|reverse %}'{{ log.timestamp.strftime('%H:%M') }}'{% if not loop.last %}, {% endif %}{% endfor %}],
+    temperatures: [{% for log in temp_history|reverse %}{{ log.temperature }}{% if not loop.last %}, {% endif %}{% endfor %}]
+};
+
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: tempData.labels,
+        datasets: [{
+            label: 'Temperature (°C)',
+            data: tempData.temperatures,
+            borderColor: '#0066CC',
+            backgroundColor: 'rgba(0, 102, 204, 0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 2
+        }, {
+            label: 'Max Threshold',
+            data: Array(tempData.labels.length).fill({{ shipment.temp_max }}),
+            borderColor: '#D32F2F',
+            borderWidth: 1,
+            borderDash: [5, 5],
+            fill: false,
+            pointRadius: 0
+        }, {
+            label: 'Min Threshold',
+            data: Array(tempData.labels.length).fill({{ shipment.temp_min }}),
+            borderColor: '#D32F2F',
+            borderWidth: 1,
+            borderDash: [5, 5],
+            fill: false,
+            pointRadius: 0
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: true,
+                position: 'top'
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: false,
+                min: {{ shipment.temp_min - 5 }},
+                max: {{ shipment.temp_max + 5 }}
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

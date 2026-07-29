@@ -1,0 +1,319 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Welcome back, {{ current_user.first_name }}!</h2>
+        <p class="text-muted mb-0">
+            <i class="bi bi-building"></i> {{ tenant.name }}
+        </p>
+    </div>
+    <div>
+        <a href="{{ url_for('shipments.create') }}" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i>
+            New Shipment
+        </a>
+    </div>
+</div>
+
+<!-- Stats Row -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="stats-card">
+            <div class="stat-icon primary">
+                <i class="bi bi-box-seam"></i>
+            </div>
+            <div class="stat-value">{{ active_shipments }}</div>
+            <div class="stat-label">Active Shipments</div>
+            <div class="stat-change positive">
+                <i class="bi bi-arrow-up"></i>
+                Tracking now
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stats-card">
+            <div class="stat-icon warning">
+                <i class="bi bi-cart3"></i>
+            </div>
+            <div class="stat-value">{{ pending_orders }}</div>
+            <div class="stat-label">Pending Orders</div>
+            <div class="stat-change positive">
+                <i class="bi bi-clock"></i>
+                Awaiting approval
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stats-card">
+            <div class="stat-icon success">
+                <i class="bi bi-file-earmark-check"></i>
+            </div>
+            <div class="stat-value">{{ valid_documents }}/{{ total_documents }}</div>
+            <div class="stat-label">Compliance Docs</div>
+            <div class="stat-change positive">
+                <i class="bi bi-check-circle"></i>
+                {{ '%0.1f'|format((valid_documents/total_documents*100) if total_documents > 0 else 100) }}% valid
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stats-card">
+            <div class="stat-icon primary">
+                <i class="bi bi-thermometer-half"></i>
+            </div>
+            <div class="stat-value">{{ temp_compliance_rate }}%</div>
+            <div class="stat-label">Temp Compliance</div>
+            <div class="stat-change positive">
+                <i class="bi bi-check-circle"></i>
+                Last 30 days
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content Row -->
+<div class="row g-4 mb-4">
+    <!-- Active Shipments -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-box-seam"></i> Active Shipments</span>
+                <a href="{{ url_for('shipments.index') }}" class="btn btn-sm btn-link">View All</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Shipment</th>
+                                <th>Product</th>
+                                <th>Route</th>
+                                <th>Temp</th>
+                                <th>Status</th>
+                                <th>Progress</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for shipment in recent_shipments %}
+                            <tr>
+                                <td>
+                                    <strong>{{ shipment.shipment_number }}</strong>
+                                </td>
+                                <td>
+                                    <div>{{ shipment.product_name[:30] }}{% if shipment.product_name|length > 30 %}...{% endif %}</div>
+                                    <small class="text-muted">{{ shipment.quantity }} {{ shipment.unit }}</small>
+                                </td>
+                                <td>
+                                    <small>
+                                        {{ shipment.origin_city[:15] }} → {{ shipment.destination_city[:15] }}
+                                    </small>
+                                </td>
+                                <td>
+                                    <span class="badge badge-temp-{{ shipment.temp_zone }}">
+                                        <i class="bi bi-thermometer-half"></i>
+                                        {{ shipment.temp_min }}°C to {{ shipment.temp_max }}°C
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if shipment.status.value == 'in_transit' %}
+                                    <span class="badge badge-success">
+                                        <i class="bi bi-circle-fill" style="font-size: 0.4rem;"></i>
+                                        In Transit
+                                    </span>
+                                    {% elif shipment.status.value == 'delayed' %}
+                                    <span class="badge badge-warning">
+                                        <i class="bi bi-exclamation-circle"></i>
+                                        Delayed
+                                    </span>
+                                    {% elif shipment.status.value == 'delivered' %}
+                                    <span class="badge badge-secondary">
+                                        <i class="bi bi-check-circle"></i>
+                                        Delivered
+                                    </span>
+                                    {% else %}
+                                    <span class="badge badge-secondary">{{ shipment.status.value }}</span>
+                                    {% endif %}
+                                </td>
+                                <td style="width: 180px; min-width: 180px;">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="progress flex-grow-1" style="height: 6px;">
+                                            <div class="progress-bar progress-bar-success" style="width: {{ shipment.progress_percentage }}%"></div>
+                                        </div>
+                                        <small class="text-muted">{{ '%0.0f'|format(shipment.progress_percentage) }}%</small>
+                                    </div>
+                                </td>
+                                <td style="min-width: 120px;">
+                                    <div class="d-flex gap-1" style="white-space: nowrap;">
+                                        <a href="{{ url_for('shipments.track', shipment_id=shipment.id) }}" class="btn btn-sm btn-primary" title="Track Live">
+                                            <i class="bi bi-geo-alt"></i>
+                                        </a>
+                                        <a href="{{ url_for('shipments.detail', shipment_id=shipment.id) }}" class="btn btn-sm btn-secondary" title="View Details">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center py-5 text-muted">
+                                    <i class="bi bi-box-seam display-4"></i>
+                                    <p class="mt-2">No shipments yet</p>
+                                    <a href="{{ url_for('shipments.create') }}" class="btn btn-sm btn-primary">
+                                        Create First Shipment
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Alerts -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-bell"></i> Recent Alerts
+            </div>
+            <div class="card-body p-0">
+                {% for alert in tenant_alerts %}
+                <div class="p-3 border-bottom {% if loop.last %}border-0{% endif %}">
+                    <div class="d-flex justify-content-between align-items-start mb-1">
+                        <strong class="small">{{ alert.get_icon() }} {{ alert.title[:40] }}{% if alert.title|length > 40 %}...{% endif %}</strong>
+                        <span class="badge badge-{{ 'danger' if alert.severity.value == 'critical' else 'warning' if alert.severity.value == 'high' else 'secondary' }}">
+                            {{ alert.severity.value }}
+                        </span>
+                    </div>
+                    <p class="small text-muted mb-2">{{ alert.message[:60] }}{% if alert.message|length > 60 %}...{% endif %}</p>
+                    <a href="{{ url_for('shipments.detail', shipment_id=alert.shipment_id) if alert.shipment_id else '#' }}" class="btn btn-sm btn-link px-0">
+                        View Details →
+                    </a>
+                </div>
+                {% else %}
+                <div class="text-center py-4 text-muted">
+                    <i class="bi bi-check-circle display-4"></i>
+                    <p class="mt-2 mb-0">No active alerts</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Quick Order -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-cart3"></i> Quick Order
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('orders.create') }}" method="GET">
+                    <div class="mb-3">
+                        <label class="form-label small">Search Materials</label>
+                        <input type="text" class="form-control form-control-sm" placeholder="mRNA, lipids, buffers...">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-sm w-100">
+                        <i class="bi bi-search"></i>
+                        Search Catalog
+                    </button>
+                </form>
+                <hr>
+                <a href="{{ url_for('orders.create') }}" class="btn btn-outline-primary btn-sm w-100">
+                    <i class="bi bi-plus-lg"></i>
+                    New Order Request
+                </a>
+            </div>
+        </div>
+        
+        <!-- Upcoming Deliveries -->
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-clock-history"></i> Upcoming (24h)
+            </div>
+            <div class="card-body p-0">
+                {% for shipment in upcoming_deliveries %}
+                <div class="p-3 border-bottom {% if loop.last %}border-0{% endif %}">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <strong class="small">{{ shipment.shipment_number }}</strong>
+                            <p class="small text-muted mb-1">{{ shipment.product_name[:30] }}</p>
+                        </div>
+                        <span class="badge badge-success">
+                            <i class="bi bi-clock"></i>
+                            {{ shipment.eta_remaining.total_seconds() // 3600 }}h
+                        </span>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center py-4 text-muted">
+                    <i class="bi bi-calendar-check display-4"></i>
+                    <p class="mt-2 mb-0">No upcoming deliveries</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Compliance Status -->
+<div class="row g-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-file-earmark-check"></i> Compliance Status</span>
+                <a href="{{ url_for('compliance.audit_report') }}" class="btn btn-sm btn-primary">
+                    <i class="bi bi-download"></i>
+                    Audit Report
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <div class="display-4 text-success mb-2">
+                                <i class="bi bi-check-circle-fill"></i>
+                            </div>
+                            <h3 class="mb-0">{{ valid_documents }}</h3>
+                            <p class="text-muted">Certificates Current</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <div class="display-4 text-success">
+                                <i class="bi bi-file-earmark-check-fill"></i>
+                            </div>
+                            <h3 class="mb-0">Complete</h3>
+                            <p class="text-muted">Temperature Logs</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <div class="display-4 text-warning">
+                                <i class="bi bi-exclamation-circle-fill"></i>
+                            </div>
+                            <h3 class="mb-0">{{ expired_documents if expired_documents else 0 }}</h3>
+                            <p class="text-muted">Docs Expiring Soon</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <div class="display-4 text-success">
+                                <i class="bi bi-shield-check-fill"></i>
+                            </div>
+                            <h3 class="mb-0">Yes</h3>
+                            <p class="text-muted">Audit Ready</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

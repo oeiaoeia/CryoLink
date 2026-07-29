@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block title %}Export Compliance Data{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 fade-in">
+    <div>
+        <nav class="breadcrumb mb-1">
+            <a href="{{ url_for('compliance.index') }}" class="text-decoration-none">Compliance</a>
+            <span class="text-muted mx-2">/</span>
+            <span class="active">Export Data</span>
+        </nav>
+        <h2 class="mb-1 gradient-text"><i class="bi bi-download"></i> Export Compliance Data</h2>
+        <p class="text-muted mb-0">Download audit reports and compliance documentation</p>
+    </div>
+    <div>
+        <a href="{{ url_for('compliance.index') }}" class="btn btn-outline-secondary glass-btn">
+            <i class="bi bi-arrow-left"></i>
+            Back
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Export Form -->
+    <div class="col-lg-8">
+        <div class="card glass-card mb-4 fade-in">
+            <div class="card-header">
+                <i class="bi bi-file-earmark-spreadsheet"></i> Export Options
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('compliance.export') }}">
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Date Range</label>
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <label class="form-label small">Start Date</label>
+                                <input type="date" class="form-control glass-input" name="start_date" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small">End Date</label>
+                                <input type="date" class="form-control glass-input" name="end_date" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Document Types</label>
+                        <div class="d-flex flex-wrap gap-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="doc_types" value="all" id="typeAll" checked onchange="toggleDocTypes(this)">
+                                <label class="form-check-label" for="typeAll">All Types</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="doc_types" value="certificate_of_analysis" id="typeCOA">
+                                <label class="form-check-label" for="typeCOA">Certificates of Analysis</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="doc_types" value="temperature_log" id="typeTemp">
+                                <label class="form-check-label" for="typeTemp">Temperature Logs</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="doc_types" value="customs_declaration" id="typeCustoms">
+                                <label class="form-check-label" for="typeCustoms">Customs Declarations</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="doc_types" value="gdp_certificate" id="typeGDP">
+                                <label class="form-check-label" for="typeGDP">GDP Certificates</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="doc_types" value="chain_of_custody" id="typeChain">
+                                <label class="form-check-label" for="typeChain">Chain of Custody</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="doc_types" value="shipping_manifest" id="typeManifest">
+                                <label class="form-check-label" for="typeManifest">Shipping Manifests</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Export Format</label>
+                        <div class="d-flex gap-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="format" value="csv" id="formatCSV" checked>
+                                <label class="form-check-label" for="formatCSV">
+                                    <i class="bi bi-filetype-csv"></i> CSV (Excel Compatible)
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="format" value="pdf" id="formatPDF">
+                                <label class="form-check-label" for="formatPDF">
+                                    <i class="bi bi-filetype-pdf"></i> PDF (Printable Report)
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="format" value="json" id="formatJSON">
+                                <label class="form-check-label" for="formatJSON">
+                                    <i class="bi bi-filetype-json"></i> JSON (Data Exchange)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Include</label>
+                        <div class="d-flex flex-wrap gap-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="include_raw" value="true" id="includeRaw" checked>
+                                <label class="form-check-label" for="includeRaw">
+                                    <i class="bi bi-database"></i> Raw Data
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="include_signatures" value="true" id="includeSigs" checked>
+                                <label class="form-check-label" for="includeSigs">
+                                    <i class="bi bi-signature"></i> Digital Signatures
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="include_blockchain" value="true" id="includeBlockchain" checked>
+                                <label class="form-check-label" for="includeBlockchain">
+                                    <i class="bi bi-link-45deg"></i> Blockchain Hashes
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary glass-btn">
+                            <i class="bi bi-download"></i>
+                            Generate Export
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary glass-btn" onclick="scheduleExport()">
+                            <i class="bi bi-calendar-event"></i>
+                            Schedule Monthly Export
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Info -->
+    <div class="col-lg-4">
+        <div class="card glass-card mb-4 fade-in">
+            <div class="card-header">
+                <i class="bi bi-info-circle"></i> Export Information
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6><i class="bi bi-file-earmark-check"></i> What's Included</h6>
+                    <ul class="small text-muted mb-0">
+                        <li>All selected document types</li>
+                        <li>Complete metadata</li>
+                        <li>Verification status</li>
+                        <li>Blockchain hashes (if enabled)</li>
+                        <li>Digital signatures (if enabled)</li>
+                    </ul>
+                </div>
+                <hr>
+                <div class="mb-3">
+                    <h6><i class="bi bi-clock"></i> Processing Time</h6>
+                    <p class="small text-muted mb-0">
+                        Exports are generated instantly for up to 1000 documents. Larger exports may take a few minutes.
+                    </p>
+                </div>
+                <hr>
+                <div>
+                    <h6><i class="bi bi-shield-check"></i> Security</h6>
+                    <p class="small text-muted mb-0">
+                        All exports are encrypted and include verification hashes for data integrity.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card glass-card fade-in">
+            <div class="card-header">
+                <i class="bi bi-calendar-event"></i> Scheduled Exports
+            </div>
+            <div class="card-body">
+                <p class="small text-muted mb-3">
+                    Automate your compliance reporting with scheduled monthly exports.
+                </p>
+                <div class="text-center">
+                    <div class="display-6 text-primary mb-2">
+                        <i class="bi bi-arrow-repeat"></i>
+                    </div>
+                    <p class="small mb-3">Next scheduled export:</p>
+                    <p class="fw-semibold mb-0">Not configured</p>
+                </div>
+                <button class="btn btn-outline-primary w-100 mt-3 glass-btn" onclick="scheduleExport()">
+                    <i class="bi bi-plus-lg"></i>
+                    Schedule Export
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleDocTypes(checkbox) {
+    if (checkbox.checked) {
+        document.querySelectorAll('input[name="doc_types"]').forEach(cb => {
+            if (cb !== checkbox) cb.disabled = true;
+        });
+    } else {
+        document.querySelectorAll('input[name="doc_types"]').forEach(cb => {
+            cb.disabled = false;
+        });
+    }
+}
+
+function scheduleExport() {
+    alert('Scheduled export feature coming soon! You will be able to configure automatic monthly exports to your email.');
+}
+
+// Set default date range (last 30 days)
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date();
+    const thirtyDaysAgo = new Date(today);
+    thirtyDaysAgo.setDate(today.getDate() - 30);
+    
+    const startDateInput = document.querySelector('input[name="start_date"]');
+    const endDateInput = document.querySelector('input[name="end_date"]');
+    
+    if (startDateInput && endDateInput) {
+        startDateInput.value = thirtyDaysAgo.toISOString().split('T')[0];
+        endDateInput.value = today.toISOString().split('T')[0];
+    }
+});
+</script>
+{% endblock %}

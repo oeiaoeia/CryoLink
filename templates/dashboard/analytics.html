@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Analytics{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1"><i class="bi bi-bar-chart-line"></i> Analytics</h2>
+        <p class="text-muted mb-0">Performance metrics for the last {{ days }} days</p>
+    </div>
+    <div class="btn-group">
+        <a href="?days=7" class="btn btn-sm {{ 'btn-primary' if days == 7 else 'btn-outline-secondary' }}">7 Days</a>
+        <a href="?days=30" class="btn btn-sm {{ 'btn-primary' if days == 30 else 'btn-outline-secondary' }}">30 Days</a>
+        <a href="?days=90" class="btn btn-sm {{ 'btn-primary' if days == 90 else 'btn-outline-secondary' }}">90 Days</a>
+    </div>
+</div>
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="display-5 mb-2">{{ total_shipments }}</div>
+                <small class="text-muted">Total Shipments</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="display-5 mb-2 text-success">{{ on_time_rate }}%</div>
+                <small class="text-muted">On-Time Delivery</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="display-5 mb-2 text-primary">{{ avg_integrity }}%</div>
+                <small class="text-muted">Avg Integrity Score</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="display-5 mb-2 {{ 'text-success' if excursions_count == 0 else 'text-danger' }}">{{ excursions_count }}</div>
+                <small class="text-muted">Temp Excursions</small>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header"><h5 class="mb-0"><i class="bi bi-truck"></i> Delivery Performance</h5></div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1"><span>On-Time Rate</span><strong>{{ on_time_rate }}%</strong></div>
+                    <div class="progress" style="height: 8px;"><div class="progress-bar bg-success" style="width: {{ on_time_rate }}%"></div></div>
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1"><span>Integrity Score</span><strong>{{ avg_integrity }}%</strong></div>
+                    <div class="progress" style="height: 8px;"><div class="progress-bar bg-primary" style="width: {{ avg_integrity }}%"></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header"><h5 class="mb-0"><i class="bi bi-thermometer-half"></i> Temperature Compliance</h5></div>
+            <div class="card-body">
+                <div class="text-center py-3">
+                    {% set compliance_pct = ((total_shipments - excursions_count) / total_shipments * 100) if total_shipments > 0 else 100 %}
+                    <div class="display-4 {{ 'text-success' if compliance_pct >= 95 else 'text-warning' if compliance_pct >= 80 else 'text-danger' }}">{{ compliance_pct|round(1) }}%</div>
+                    <p class="text-muted">Shipments without excursions</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

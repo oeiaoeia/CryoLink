@@ -1,0 +1,318 @@
+{% extends "base.html" %}
+
+{% block title %}Track {{ shipment.shipment_number }}{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <nav class="breadcrumb mb-1">
+            <a href="{{ url_for('dashboard.operations') }}" class="text-decoration-none">Dashboard</a>
+            <span class="text-muted mx-2">/</span>
+            <a href="{{ url_for('shipments.index') }}" class="text-decoration-none">Shipments</a>
+            <span class="text-muted mx-2">/</span>
+            <span>{{ shipment.shipment_number }}</span>
+        </nav>
+        <h2 class="mb-1">
+            🚚 Track Live: {{ shipment.shipment_number }}
+            <span class="badge badge-temp-{{ shipment.temp_zone }} ms-2">
+                <i class="bi bi-thermometer-half"></i>
+                {{ shipment.temp_min }}°C to {{ shipment.temp_max }}°C
+            </span>
+        </h2>
+        <p class="text-muted mb-0">
+            {{ shipment.product_name }} | {{ shipment.origin_city }} → {{ shipment.destination_city }}
+        </p>
+    </div>
+    <div>
+        <a href="{{ url_for('shipments.detail', shipment_id=shipment.id) }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i>
+            Back to Details
+        </a>
+    </div>
+</div>
+
+<!-- Live Status Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="text-muted small mb-2">CURRENT TEMPERATURE</div>
+                <div class="display-4 mb-2 {% if current_temp and shipment.temp_min <= current_temp <= shipment.temp_max %}text-success{% else %}text-danger{% endif %}">
+                    {% if current_temp %}
+                    {{ '%0.1f'|format(current_temp) }}°C
+                    {% else %}
+                    --
+                    {% endif %}
+                </div>
+                <span class="badge {% if current_temp and shipment.temp_min <= current_temp <= shipment.temp_max %}badge-success{% else %}badge-warning{% endif %}">
+                    {% if current_temp and shipment.temp_min <= current_temp <= shipment.temp_max %}
+                    <i class="bi bi-check-circle"></i> Normal
+                    {% else %}
+                    <i class="bi bi-exclamation-circle"></i> Check
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="text-muted small mb-2">LOCATION</div>
+                <div class="h5 mb-2">{{ shipment.current_location or 'In Transit' }}</div>
+                <small class="text-muted">Last updated now</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="text-muted small mb-2">PROGRESS</div>
+                <div class="display-4 mb-2">{{ '%0.0f'|format(shipment.progress_percentage) }}%</div>
+                <div class="progress" style="height: 8px;">
+                    <div class="progress-bar progress-bar-success" style="width: {{ shipment.progress_percentage }}%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="text-muted small mb-2">ETA</div>
+                <div class="h5 mb-2">
+                    {% if shipment.estimated_arrival %}
+                    {{ shipment.estimated_arrival.strftime('%b %d') }}
+                    {% else %}
+                    --
+                    {% endif %}
+                </div>
+                <small class="text-muted">
+                    {% if shipment.estimated_arrival %}
+                    {{ shipment.estimated_arrival.strftime('%H:%M') }}
+                    {% endif %}
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Map and Info Row -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-geo-alt"></i> Live Location Tracking
+            </div>
+            <div class="card-body p-0">
+                <div id="trackMap" style="height: 450px; width: 100%;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="bi bi-info-circle"></i> Shipment Information
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="text-muted small">PRODUCT</label>
+                    <div class="fw-semibold">{{ shipment.product_name }}</div>
+                </div>
+                <div class="mb-3">
+                    <label class="text-muted small">QUANTITY</label>
+                    <div class="fw-semibold">{{ shipment.quantity }} {{ shipment.unit }}</div>
+                </div>
+                <div class="mb-3">
+                    <label class="text-muted small">ORIGIN</label>
+                    <div class="fw-semibold">
+                        <i class="bi bi-geo-alt text-primary"></i>
+                        {{ shipment.origin_facility or shipment.origin_city }}, {{ shipment.origin_country }}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="text-muted small">DESTINATION</label>
+                    <div class="fw-semibold">
+                        <i class="bi bi-flag text-danger"></i>
+                        {{ shipment.destination_facility or shipment.destination_city }}, {{ shipment.destination_country }}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="text-muted small">STATUS</label>
+                    <div>
+                        <span class="badge badge-{{ 'success' if shipment.status.value == 'in_transit' else 'warning' if shipment.status.value == 'delayed' else 'secondary' }}">
+                            {{ shipment.status.value|replace('_', ' ')|title }}
+                        </span>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="text-muted small">CARRIER</label>
+                    <div class="fw-semibold">{{ shipment.carrier_name or 'Not assigned' }}</div>
+                </div>
+                {% if shipment.tracking_number %}
+                <div class="mb-3">
+                    <label class="text-muted small">TRACKING #</label>
+                    <div class="font-mono small">{{ shipment.tracking_number }}</div>
+                </div>
+                {% endif %}
+                <hr>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('shipments.detail', shipment_id=shipment.id) }}" class="btn btn-primary">
+                        <i class="bi bi-file-text"></i>
+                        View Full Details
+                    </a>
+                    <a href="{{ url_for('compliance.shipment_documents', shipment_id=shipment.id) }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-file-earmark"></i>
+                        Documents
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Temperature Timeline -->
+<div class="row g-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-thermometer-half"></i> Temperature History (Last 24 Hours)</span>
+                <span class="badge badge-success">
+                    <i class="bi bi-check-circle"></i>
+                    Within Range: {{ compliance_rate }}%
+                </span>
+            </div>
+            <div class="card-body">
+                <div class="chart-container" style="height: 300px;">
+                    <canvas id="tempChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+// Shipment data
+const shipment = {
+    id: {{ shipment.id }},
+    number: '{{ shipment.shipment_number }}',
+    lat: {{ (coordinates.lat if coordinates else 40.7128) }},
+    lng: {{ (coordinates.lng if coordinates else -74.0060) }},
+    origin: '{{ shipment.origin_city }}',
+    destination: '{{ shipment.destination_city }}',
+    progress: {{ shipment.progress_percentage }}
+};
+
+// Initialize map
+const map = L.map('trackMap').setView([shipment.lat, shipment.lng], 4);
+
+// Add OpenStreetMap tiles
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+}).addTo(map);
+
+// Route line (simplified)
+const routeLine = L.polyline([
+    [35.6762, 139.6503],  // Example origin
+    [shipment.lat, shipment.lng],  // Current location
+    [40.7128, -74.0060]  // Example destination
+], {
+    color: '#0066CC',
+    weight: 3,
+    opacity: 0.7,
+    dashArray: '10, 10'
+}).addTo(map);
+
+// Current location marker
+const currentMarker = L.marker([shipment.lat, shipment.lng]).addTo(map)
+    .bindPopup(`
+        <div style="min-width: 200px;">
+            <h6 style="margin-bottom: 8px; font-weight: 600;">{{ shipment.shipment_number }}</h6>
+            <p style="margin: 4px 0; font-size: 13px;"><strong>Current Location</strong></p>
+            <p style="margin: 4px 0; font-size: 13px;">{{ shipment.current_location or 'In Transit' }}</p>
+            <p style="margin: 4px 0; font-size: 13px;"><strong>Progress:</strong> {{ shipment.progress_percentage }}%</p>
+        </div>
+    `)
+    .openPopup();
+
+// Fit map to show entire route
+map.fitBounds(routeLine.getBounds(), { padding: [50, 50] });
+
+// Temperature Chart
+const ctx = document.getElementById('tempChart').getContext('2d');
+const tempData = {
+    labels: [{% for log in temp_history[:24]|reverse %}'{{ log.timestamp.strftime('%H:%M') }}'{% if not loop.last %}, {% endif %}{% endfor %}],
+    temperatures: [{% for log in temp_history[:24]|reverse %}{{ log.temperature }}{% if not loop.last %}, {% endif %}{% endfor %}]
+};
+
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: tempData.labels,
+        datasets: [{
+            label: 'Temperature (°C)',
+            data: tempData.temperatures,
+            borderColor: '#0066CC',
+            backgroundColor: 'rgba(0, 102, 204, 0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 3
+        }, {
+            label: 'Max Threshold',
+            data: Array(tempData.labels.length).fill({{ shipment.temp_max }}),
+            borderColor: '#D32F2F',
+            borderWidth: 1,
+            borderDash: [5, 5],
+            fill: false,
+            pointRadius: 0
+        }, {
+            label: 'Min Threshold',
+            data: Array(tempData.labels.length).fill({{ shipment.temp_min }}),
+            borderColor: '#D32F2F',
+            borderWidth: 1,
+            borderDash: [5, 5],
+            fill: false,
+            pointRadius: 0
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'top',
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: false
+            }
+        }
+    }
+});
+
+// Auto-refresh every 10 seconds
+setTimeout(function() {
+    location.reload();
+}, 10000);
+</script>
+
+<style>
+.leaflet-popup-content-wrapper {
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+}
+</style>
+{% endblock %}

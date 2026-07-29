@@ -1,0 +1,8 @@
+.vercel
+.git
+__pycache__
+*.pyc
+venv/
+instance/
+uploads/
+*.db

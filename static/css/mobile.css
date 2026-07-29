@@ -1,0 +1,408 @@
+/* CryoLink - Mobile Responsive Styles
+ * Phone-optimized UI like Figma mobile design
+ */
+
+/* ============ MOBILE-FIRST BASE ============ */
+
+* {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+}
+
+/* Prevent iOS zoom on input focus */
+input, textarea, select {
+    font-size: 16px !important;
+}
+
+/* ============ MOBILE BOTTOM NAVIGATION ============ */
+
+.mobile-nav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 0.5rem 0;
+    padding-bottom: env(safe-area-inset-bottom);
+    z-index: 1000;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] .mobile-nav {
+    background: rgba(30, 41, 59, 0.98);
+    border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+.mobile-nav-items {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.mobile-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    color: #64748b;
+    text-decoration: none;
+    font-size: 0.7rem;
+    transition: all 0.2s ease;
+    min-width: 60px;
+}
+
+.mobile-nav-item i {
+    font-size: 1.4rem;
+    margin-bottom: 0.2rem;
+}
+
+.mobile-nav-item.active,
+.mobile-nav-item:hover {
+    color: #0066CC;
+    transform: translateY(-2px);
+}
+
+/* Show mobile nav on phones */
+@media (max-width: 768px) {
+    .mobile-nav {
+        display: block;
+    }
+    
+    .main-content {
+        padding-bottom: 80px !important;
+    }
+    
+    /* Add extra padding to cards at bottom of page */
+    .card:last-child {
+        margin-bottom: 1.5rem !important;
+    }
+}
+
+/* ============ MOBILE SIDEBAR ============ */
+
+.sidebar {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar-overlay.show {
+    display: block;
+    opacity: 1;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+    
+    .sidebar.show {
+        transform: translateX(0);
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
+    }
+}
+
+/* ============ MOBILE TYPOGRAPHY ============ */
+
+@media (max-width: 768px) {
+    h1 { font-size: 1.5rem; }
+    h2 { font-size: 1.25rem; }
+    h3 { font-size: 1.125rem; }
+    
+    .stat-value {
+        font-size: 1.5rem !important;
+    }
+}
+
+/* ============ TOUCH-FRIENDLY BUTTONS ============ */
+
+.btn {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.6rem 1.2rem;
+    border-radius: 12px;
+}
+
+.btn-sm {
+    min-height: 36px;
+    padding: 0.4rem 0.8rem;
+}
+
+/* ============ MOBILE CARDS ============ */
+
+@media (max-width: 768px) {
+    .card {
+        border-radius: 12px;
+        margin-bottom: 0.75rem;
+    }
+    
+    .card-header {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .stats-card {
+        padding: 1rem;
+    }
+    
+    .stats-card .stat-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.25rem;
+    }
+}
+
+/* ============ MOBILE TABLES ============ */
+
+@media (max-width: 768px) {
+    .table-responsive {
+        border-radius: 12px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .table thead th {
+        font-size: 0.65rem;
+        padding: 0.5rem 0.75rem;
+        white-space: nowrap;
+    }
+    
+    .table tbody td {
+        padding: 0.75rem;
+        font-size: 0.85rem;
+        white-space: nowrap;
+    }
+    
+    /* Ensure action buttons are fully visible */
+    .table tbody td:last-child {
+        min-width: 100px;
+        padding-right: 1rem;
+    }
+}
+
+/* ============ MOBILE FORMS ============ */
+
+@media (max-width: 768px) {
+    .form-control, .form-select {
+        min-height: 44px;
+        padding: 0.6rem 0.75rem;
+        border-radius: 12px;
+    }
+    
+    .form-label {
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* ============ MOBILE ALERTS ============ */
+
+@media (max-width: 768px) {
+    .alert {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* ============ MOBILE BADGES ============ */
+
+.badge {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.7rem;
+    border-radius: 9999px;
+}
+
+/* ============ MOBILE NAVBAR ============ */
+
+.top-navbar {
+    min-height: 60px;
+    padding: 0.75rem 1rem;
+}
+
+@media (max-width: 768px) {
+    .top-navbar {
+        padding: 0.5rem 1rem;
+    }
+    
+    .user-menu .d-none {
+        display: none !important;
+    }
+}
+
+/* ============ MOBILE GRID ============ */
+
+@media (max-width: 768px) {
+    .row.g-4 {
+        gap: 0.75rem !important;
+    }
+    
+    .col-md-3, .col-md-4, .col-md-6, .col-md-8 {
+        margin-bottom: 0.75rem;
+    }
+}
+
+/* ============ MOBILE MAP ============ */
+
+@media (max-width: 768px) {
+    .map-container {
+        height: 300px !important;
+    }
+}
+
+/* ============ MOBILE CHARTS ============ */
+
+@media (max-width: 768px) {
+    .chart-container {
+        height: 250px !important;
+    }
+}
+
+/* ============ MOBILE TIMELINE ============ */
+
+@media (max-width: 768px) {
+    .timeline {
+        padding-left: 1.5rem;
+    }
+    
+    .timeline-item::before {
+        left: -1.375rem;
+        width: 10px;
+        height: 10px;
+    }
+}
+
+/* ============ ANIMATIONS ============ */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.slide-in-left {
+    animation: slideInLeft 0.4s ease-out;
+}
+
+/* ============ SAFE AREAS (iPhone X+) ============ */
+
+@supports (padding: max(0px)) {
+    body {
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+    }
+    
+    .top-navbar {
+        padding-left: max(1rem, env(safe-area-inset-left));
+        padding-right: max(1rem, env(safe-area-inset-right));
+    }
+    
+    .mobile-nav {
+        padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+    }
+}
+
+/* ============ LOADING STATES ============ */
+
+.loading-skeleton {
+    background: linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 0.05) 0%,
+        rgba(0, 0, 0, 0.1) 50%,
+        rgba(0, 0, 0, 0.05) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+/* ============ SCROLL IMPROVEMENTS ============ */
+
+* {
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Custom scrollbar for webkit */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 102, 204, 0.3);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 102, 204, 0.5);
+}
+
+/* ============ DARK MODE MOBILE ============ */
+
+[data-theme="dark"] .mobile-nav {
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .sidebar-overlay {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+    background: rgba(59, 130, 246, 0.5);
+}

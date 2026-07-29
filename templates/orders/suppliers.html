@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Suppliers{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 fade-in">
+    <div>
+        <h2 class="mb-1 gradient-text"><i class="bi bi-people"></i> Suppliers</h2>
+        <p class="text-muted mb-0">Browse and manage raw material suppliers</p>
+    </div>
+    <div>
+        <a href="{{ url_for('orders.create') }}" class="btn btn-primary glass-btn ripple scale-in">
+            <i class="bi bi-plus-lg"></i>
+            New Order
+        </a>
+    </div>
+</div>
+
+<!-- Search & Filters -->
+<div class="card glass-card mb-4 fade-in">
+    <div class="card-body">
+        <form method="GET" class="row g-3 align-items-center">
+            <div class="col-md-4">
+                <input type="text" class="form-control glass-input" placeholder="Search suppliers..." name="q">
+            </div>
+            <div class="col-md-3">
+                <select class="form-select glass-input" name="country">
+                    <option value="">All Countries</option>
+                    <option value="Singapore">Singapore</option>
+                    <option value="Germany">Germany</option>
+                    <option value="United States">United States</option>
+                    <option value="Switzerland">Switzerland</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select glass-input" name="certification">
+                    <option value="">All Certifications</option>
+                    <option value="GMP">GMP</option>
+                    <option value="FDA">FDA</option>
+                    <option value="ISO">ISO</option>
+                    <option value="EMA">EMA</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary glass-btn w-100">
+                    <i class="bi bi-search"></i>
+                    Search
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Suppliers Grid -->
+<div class="row g-4">
+    {% for supplier in suppliers %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card glass-card hover-lift fade-in" style="animation-delay: {{ loop.index * 0.1 }}s;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="user-avatar" style="width: 48px; height: 48px; font-size: 1.25rem;">
+                            {{ supplier.name[0] }}
+                        </div>
+                        <div>
+                            <h5 class="mb-0">{{ supplier.name }}</h5>
+                            <small class="text-muted">{{ supplier.country }}</small>
+                        </div>
+                    </div>
+                    {% if supplier.is_verified %}
+                    <span class="badge badge-success">
+                        <i class="bi bi-check-circle"></i>
+                        Verified
+                    </span>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-2">
+                        <small class="text-muted">Rating</small>
+                        <div class="text-warning">
+                            {% for i in range(5) %}
+                                {% if i < supplier.rating|int %}
+                                    <i class="bi bi-star-fill"></i>
+                                {% elif i < supplier.rating %}
+                                    <i class="bi bi-star-half"></i>
+                                {% else %}
+                                    <i class="bi bi-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                            {{ ' %.1f'|format(supplier.rating) }}
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mb-2">
+                        <small class="text-muted">On-Time Delivery</small>
+                        <span class="text-success">{{ '%.1f'|format(supplier.on_time_delivery_rate) }}%</span>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mb-2">
+                        <small class="text-muted">Quality Score</small>
+                        <span class="text-primary">{{ '%.1f'|format(supplier.quality_score) }}%</span>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <small class="text-muted">CERTIFICATIONS</small>
+                    <div class="d-flex flex-wrap gap-1 mt-1">
+                        {% for cert in supplier.certifications or [] %}
+                        <span class="badge badge-primary">{{ cert }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <small class="text-muted">TEMPERATURE ZONES</small>
+                    <div class="d-flex flex-wrap gap-1 mt-1">
+                        {% for zone in supplier.temperature_zones or [] %}
+                        <span class="badge badge-temp-{{ zone }}">{{ zone|title }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('orders.supplier_detail', supplier_id=supplier.id) }}" class="btn btn-primary glass-btn">
+                        <i class="bi bi-eye"></i>
+                        View Details
+                    </a>
+                    <a href="{{ url_for('orders.create') }}?supplier={{ supplier.id }}" class="btn btn-outline-secondary glass-btn">
+                        <i class="bi bi-cart3"></i>
+                        Create Order
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12">
+        <div class="card glass-card text-center py-5">
+            <div class="card-body">
+                <i class="bi bi-people display-1 text-muted"></i>
+                <h4 class="mt-3">No Suppliers Found</h4>
+                <p class="text-muted">Try adjusting your search filters</p>
+                <a href="{{ url_for('orders.suppliers') }}" class="btn btn-primary glass-btn">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                    Clear Filters
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

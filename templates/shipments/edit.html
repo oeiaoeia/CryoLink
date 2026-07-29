@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Shipment {{ shipment.shipment_number }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1"><i class="bi bi-pencil-square"></i> Edit Shipment</h2>
+        <p class="text-muted mb-0">{{ shipment.shipment_number }}</p>
+    </div>
+    <a href="{{ url_for('shipments.detail', shipment_id=shipment.id) }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Details
+    </a>
+</div>
+
+<form method="POST" action="{{ url_for('shipments.edit', shipment_id=shipment.id) }}">
+    <div class="row g-4">
+        <!-- Product Information -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-box"></i> Product Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="product_name" class="form-label">Product Name *</label>
+                        <input type="text" class="form-control" id="product_name" name="product_name"
+                               value="{{ shipment.product_name }}" required>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label for="quantity" class="form-label">Quantity *</label>
+                            <input type="number" class="form-control" id="quantity" name="quantity"
+                                   value="{{ shipment.quantity }}" required min="1">
+                        </div>
+                        <div class="col-6">
+                            <label for="unit" class="form-label">Unit</label>
+                            <select class="form-select" id="unit" name="unit">
+                                <option value="units" {% if shipment.unit == 'units' %}selected{% endif %}>Units</option>
+                                <option value="kg" {% if shipment.unit == 'kg' %}selected{% endif %}>Kilograms</option>
+                                <option value="liters" {% if shipment.unit == 'liters' %}selected{% endif %}>Liters</option>
+                                <option value="vials" {% if shipment.unit == 'vials' %}selected{% endif %}>Vials</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Temperature & Carrier -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-thermometer-half"></i> Temperature & Carrier</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <label for="temp_min" class="form-label">Min Temp (°C)</label>
+                            <input type="number" class="form-control" id="temp_min" name="temp_min"
+                                   value="{{ shipment.temp_min }}" step="0.1">
+                        </div>
+                        <div class="col-6">
+                            <label for="temp_max" class="form-label">Max Temp (°C)</label>
+                            <input type="number" class="form-control" id="temp_max" name="temp_max"
+                                   value="{{ shipment.temp_max }}" step="0.1">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="priority" class="form-label">Priority</label>
+                        <select class="form-select" id="priority" name="priority">
+                            <option value="standard" {% if shipment.priority == 'standard' %}selected{% endif %}>Standard</option>
+                            <option value="urgent" {% if shipment.priority == 'urgent' %}selected{% endif %}>Urgent</option>
+                            <option value="economy" {% if shipment.priority == 'economy' %}selected{% endif %}>Economy</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="carrier_name" class="form-label">Carrier Name</label>
+                        <input type="text" class="form-control" id="carrier_name" name="carrier_name"
+                               value="{{ shipment.carrier_name or '' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="tracking_number" class="form-label">Tracking Number</label>
+                        <input type="text" class="form-control" id="tracking_number" name="tracking_number"
+                               value="{{ shipment.tracking_number or '' }}">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit -->
+        <div class="col-12">
+            <div class="d-flex gap-3 justify-content-end">
+                <a href="{{ url_for('shipments.detail', shipment_id=shipment.id) }}" class="btn btn-outline-secondary btn-lg">Cancel</a>
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-check-lg"></i> Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}

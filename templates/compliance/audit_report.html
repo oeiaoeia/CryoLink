@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}Audit Report{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 fade-in">
+    <div>
+        <nav class="breadcrumb mb-1">
+            <a href="{{ url_for('compliance.index') }}" class="text-decoration-none">Compliance</a>
+            <span class="text-muted mx-2">/</span>
+            <span class="active">Audit Report</span>
+        </nav>
+        <h2 class="mb-1 gradient-text"><i class="bi bi-clipboard-check"></i> Audit Readiness Report</h2>
+        <p class="text-muted mb-0">Compliance status and audit preparation</p>
+    </div>
+    <div>
+        <a href="{{ url_for('compliance.export') }}" class="btn btn-primary glass-btn ripple scale-in">
+            <i class="bi bi-download"></i>
+            Export Report
+        </a>
+    </div>
+</div>
+
+<!-- Audit Readiness Score -->
+<div class="card glass-card mb-4 fade-in">
+    <div class="card-body text-center py-5">
+        <div class="mb-3">
+            {% if readiness_score >= 90 %}
+            <div class="display-1 text-success mb-2">
+                <i class="bi bi-check-circle-fill"></i>
+            </div>
+            <h3 class="text-success">Audit Ready!</h3>
+            {% elif readiness_score >= 70 %}
+            <div class="display-1 text-warning mb-2">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+            </div>
+            <h3 class="text-warning">Almost Ready</h3>
+            {% else %}
+            <div class="display-1 text-danger mb-2">
+                <i class="bi bi-x-circle-fill"></i>
+            </div>
+            <h3 class="text-danger">Needs Attention</h3>
+            {% endif %}
+        </div>
+        <div class="display-2 fw-bold mb-2">{{ readiness_score }}%</div>
+        <p class="text-muted">Overall Compliance Score</p>
+        <div class="progress mt-3" style="height: 10px; max-width: 400px; margin: 0 auto;">
+            <div class="progress-bar progress-bar-{{ 'success' if readiness_score >= 90 else 'warning' if readiness_score >= 70 else 'danger' }}" 
+                 style="width: {{ readiness_score }}%"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Document Statistics -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card glass-card hover-lift fade-in">
+            <div class="card-body text-center">
+                <div class="display-4 text-primary mb-2">
+                    <i class="bi bi-file-earmark-text"></i>
+                </div>
+                <div class="display-5 fw-bold">{{ total }}</div>
+                <div class="text-muted">Total Documents</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card glass-card hover-lift fade-in" style="animation-delay: 0.1s;">
+            <div class="card-body text-center">
+                <div class="display-4 text-success mb-2">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+                <div class="display-5 fw-bold">{{ valid }}</div>
+                <div class="text-muted">Valid Documents</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card glass-card hover-lift fade-in" style="animation-delay: 0.2s;">
+            <div class="card-body text-center">
+                <div class="display-4 text-danger mb-2">
+                    <i class="bi bi-x-circle"></i>
+                </div>
+                <div class="display-5 fw-bold">{{ expired }}</div>
+                <div class="text-muted">Expired Documents</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card glass-card hover-lift fade-in" style="animation-delay: 0.3s;">
+            <div class="card-body text-center">
+                <div class="display-4 text-warning mb-2">
+                    <i class="bi bi-clock"></i>
+                </div>
+                <div class="display-5 fw-bold">{{ pending }}</div>
+                <div class="text-muted">Pending Verification</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Documents by Type -->
+<div class="card glass-card mb-4 fade-in">
+    <div class="card-header">
+        <i class="bi bi-pie-chart"></i> Documents by Type
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Document Type</th>
+                        <th>Valid</th>
+                        <th>Total</th>
+                        <th>Compliance Rate</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for doc_type, stats in by_type.items() %}
+                    <tr>
+                        <td>{{ doc_type|replace('_', ' ')|title }}</td>
+                        <td><span class="text-success">{{ stats.valid }}</span></td>
+                        <td>{{ stats.total }}</td>
+                        <td>
+                            <div class="progress" style="height: 8px; width: 100px;">
+                                <div class="progress-bar progress-bar-{{ 'success' if (stats.valid/stats.total*100) >= 90 else 'warning' if (stats.valid/stats.total*100) >= 70 else 'danger' }}" 
+                                     style="width: {{ (stats.valid/stats.total*100)|round }}%"></div>
+                            </div>
+                        </td>
+                        <td>
+                            {% if (stats.valid/stats.total*100) >= 90 %}
+                            <span class="badge badge-success">
+                                <i class="bi bi-check-circle"></i> Excellent
+                            </span>
+                            {% elif (stats.valid/stats.total*100) >= 70 %}
+                            <span class="badge badge-warning">
+                                <i class="bi bi-exclamation-circle"></i> Good
+                            </span>
+                            {% else %}
+                            <span class="badge badge-danger">
+                                <i class="bi bi-x-circle"></i> Needs Work
+                            </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Expiring Soon -->
+{% if expiring_soon %}
+<div class="card glass-card fade-in">
+    <div class="card-header">
+        <i class="bi bi-exclamation-triangle"></i> Documents Expiring Soon (30 days)
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Document</th>
+                        <th>Type</th>
+                        <th>Expires</th>
+                        <th>Days Left</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for doc in expiring_soon %}
+                    <tr>
+                        <td>
+                            <strong>{{ doc.title[:40] }}{% if doc.title|length > 40 %}...{% endif %}</strong>
+                        </td>
+                        <td>
+                            <span class="badge badge-secondary">{{ doc.document_type.value|replace('_', ' ')|title }}</span>
+                        </td>
+                        <td>{{ doc.valid_until.strftime('%b %d, %Y') }}</td>
+                        <td>
+                            {% set days_left = (doc.valid_until - now).days if now is defined else 0 %}
+                            <span class="text-{{ 'danger' if days_left < 7 else 'warning' }}">{{ days_left }} days</span>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('compliance.document_detail', doc_id=doc.id) }}" class="btn btn-sm btn-primary glass-btn">
+                                <i class="bi bi-eye"></i>
+                                Review
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

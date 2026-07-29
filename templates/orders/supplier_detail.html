@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}{{ supplier.name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 fade-in">
+    <div>
+        <nav class="breadcrumb mb-1">
+            <a href="{{ url_for('orders.suppliers') }}" class="text-decoration-none">Suppliers</a>
+            <span class="text-muted mx-2">/</span>
+            <span class="active">{{ supplier.name }}</span>
+        </nav>
+        <h2 class="mb-1 gradient-text"><i class="bi bi-building"></i> {{ supplier.name }}</h2>
+        <p class="text-muted mb-0">{{ supplier.country }}</p>
+    </div>
+    <div>
+        <a href="{{ url_for('orders.create') }}?supplier={{ supplier.id }}" class="btn btn-primary glass-btn">
+            <i class="bi bi-cart3"></i>
+            Create Order
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Supplier Info -->
+    <div class="col-lg-8">
+        <div class="card glass-card mb-4 fade-in">
+            <div class="card-header">
+                <i class="bi bi-info-circle"></i> Supplier Information
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="text-muted small">CONTACT EMAIL</label>
+                        <div>{{ supplier.email or 'N/A' }}</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small">PHONE</label>
+                        <div>{{ supplier.phone or 'N/A' }}</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small">WEBSITE</label>
+                        <div>
+                            {% if supplier.website %}
+                            <a href="{{ supplier.website }}" target="_blank">{{ supplier.website }}</a>
+                            {% else %}
+                            N/A
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small">ADDRESS</label>
+                        <div>{{ supplier.address or 'N/A' }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Metrics -->
+        <div class="card glass-card mb-4 fade-in">
+            <div class="card-header">
+                <i class="bi bi-bar-chart"></i> Performance Metrics
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    <div class="col-md-4 text-center">
+                        <div class="display-4 text-warning mb-2">
+                            {% for i in range(5) %}
+                                {% if i < supplier.rating|int %}
+                                    <i class="bi bi-star-fill"></i>
+                                {% elif i < supplier.rating %}
+                                    <i class="bi bi-star-half"></i>
+                                {% else %}
+                                    <i class="bi bi-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="h3 mb-0">{{ '%.1f'|format(supplier.rating) }}/5</div>
+                        <small class="text-muted">Overall Rating</small>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="display-4 text-success mb-2">
+                            <i class="bi bi-check-circle"></i>
+                        </div>
+                        <div class="h3 mb-0">{{ '%.1f'|format(supplier.on_time_delivery_rate) }}%</div>
+                        <small class="text-muted">On-Time Delivery</small>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="display-4 text-primary mb-2">
+                            <i class="bi bi-award"></i>
+                        </div>
+                        <div class="h3 mb-0">{{ '%.1f'|format(supplier.quality_score) }}%</div>
+                        <small class="text-muted">Quality Score</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Certifications -->
+        <div class="card glass-card mb-4 fade-in">
+            <div class="card-header">
+                <i class="bi bi-patch-check"></i> Certifications
+            </div>
+            <div class="card-body">
+                <div class="d-flex flex-wrap gap-2">
+                    {% for cert in supplier.certifications or [] %}
+                    <span class="badge badge-primary" style="font-size: 1rem; padding: 8px 16px;">
+                        <i class="bi bi-check-circle"></i> {{ cert }}
+                    </span>
+                    {% endfor %}
+                    {% if not supplier.certifications %}
+                    <span class="text-muted">No certifications listed</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Quick Stats -->
+        <div class="card glass-card mb-4 fade-in">
+            <div class="card-header">
+                <i class="bi bi-lightning"></i> Quick Stats
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">Total Orders</span>
+                        <strong>{{ supplier.total_orders or 0 }}</strong>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">Status</span>
+                        {% if supplier.is_verified %}
+                        <span class="badge badge-success">
+                            <i class="bi bi-check-circle"></i> Verified
+                        </span>
+                        {% else %}
+                        <span class="badge badge-secondary">Unverified</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">Min Order</span>
+                        <strong>${{ '%.2f'|format(supplier.min_order_value or 0) }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Temperature Zones -->
+        <div class="card glass-card mb-4 fade-in">
+            <div class="card-header">
+                <i class="bi bi-thermometer-half"></i> Temperature Zones
+            </div>
+            <div class="card-body">
+                <div class="d-flex flex-wrap gap-2">
+                    {% for zone in supplier.temperature_zones or [] %}
+                    <span class="badge badge-temp-{{ zone }}">
+                        <i class="bi bi-thermometer-half"></i> {{ zone|title }}
+                    </span>
+                    {% endfor %}
+                    {% if not supplier.temperature_zones %}
+                    <span class="text-muted">No zones specified</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Categories -->
+        <div class="card glass-card fade-in">
+            <div class="card-header">
+                <i class="bi bi-box-seam"></i> Product Categories
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    {% for category in supplier.product_categories or [] %}
+                    <li class="mb-2">
+                        <i class="bi bi-check2 text-success me-2"></i>
+                        {{ category }}
+                    </li>
+                    {% endfor %}
+                    {% if not supplier.product_categories %}
+                    <li class="text-muted">No categories listed</li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

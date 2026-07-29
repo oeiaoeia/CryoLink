@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-4">
+        <!-- Profile Card -->
+        <div class="card">
+            <div class="card-body text-center">
+                <div class="user-avatar mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2rem;">
+                    {{ current_user.first_name[0] }}{{ current_user.last_name[0] }}
+                </div>
+                <h3 class="mb-1">{{ current_user.full_name }}</h3>
+                <p class="text-muted mb-3">{{ current_user.job_title or 'User' }}</p>
+                <span class="badge badge-primary mb-3">
+                    <i class="bi bi-shield-check"></i>
+                    {{ current_user.role.value|replace('_', ' ')|title }}
+                </span>
+                {% if current_user.tenant %}
+                <div class="d-flex align-items-center justify-content-center gap-2 text-muted small">
+                    <i class="bi bi-building"></i>
+                    {{ current_user.tenant.name }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Quick Stats -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <i class="bi bi-bar-chart"></i> Quick Stats
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-muted">Shipments Created</span>
+                    <strong>0</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-muted">Orders Placed</span>
+                    <strong>0</strong>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span class="text-muted">Documents Uploaded</span>
+                    <strong>0</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-8">
+        <!-- Profile Information -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-person"></i> Profile Information</span>
+                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                    <i class="bi bi-pencil"></i>
+                    Edit
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label class="text-muted small">Email Address</label>
+                        <div class="fw-semibold">{{ current_user.email }}</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small">Full Name</label>
+                        <div class="fw-semibold">{{ current_user.full_name }}</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small">Phone</label>
+                        <div class="fw-semibold">{{ current_user.phone or 'Not set' }}</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small">Timezone</label>
+                        <div class="fw-semibold">{{ current_user.timezone or 'UTC' }}</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small">Language</label>
+                        <div class="fw-semibold">{{ (current_user.language or 'en')|upper }}</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small">Last Login</label>
+                        <div class="fw-semibold">
+                            {% if current_user.last_login %}
+                            {{ current_user.last_login.strftime('%b %d, %Y %H:%M') }}
+                            {% else %}
+                            Never
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Security Settings -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-shield-lock"></i> Security
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <strong>Password</strong>
+                        <p class="text-muted small mb-0">Last changed {{ current_user.password_changed_at.strftime('%b %d, %Y') if current_user.password_changed_at else 'Never' }}</p>
+                    </div>
+                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                        <i class="bi bi-pencil"></i>
+                        Change
+                    </button>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>Two-Factor Authentication</strong>
+                        <p class="text-muted small mb-0">Add an extra layer of security</p>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" disabled>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Notification Preferences -->
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-bell"></i> Notification Preferences
+            </div>
+            <div class="card-body">
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="emailNotifications" {% if current_user.email_notifications %}checked{% endif %}>
+                    <label class="form-check-label" for="emailNotifications">
+                        <strong>Email Notifications</strong>
+                        <p class="text-muted small mb-0">Receive alerts and updates via email</p>
+                    </label>
+                </div>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="pushNotifications" {% if current_user.notifications_enabled %}checked{% endif %}>
+                    <label class="form-check-label" for="pushNotifications">
+                        <strong>Push Notifications</strong>
+                        <p class="text-muted small mb-0">Receive real-time alerts in the application</p>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="modal fade" id="editProfileModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('auth.edit_profile') }}">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">First Name</label>
+                        <input type="text" class="form-control" name="first_name" value="{{ current_user.first_name }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Last Name</label>
+                        <input type="text" class="form-control" name="last_name" value="{{ current_user.last_name }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone</label>
+                        <input type="tel" class="form-control" name="phone" value="{{ current_user.phone }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Job Title</label>
+                        <input type="text" class="form-control" name="job_title" value="{{ current_user.job_title }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Timezone</label>
+                        <select class="form-select" name="timezone">
+                            <option value="UTC" {% if current_user.timezone == 'UTC' %}selected{% endif %}>UTC</option>
+                            <option value="America/New_York" {% if current_user.timezone == 'America/New_York' %}selected{% endif %}>Eastern Time</option>
+                            <option value="America/Chicago" {% if current_user.timezone == 'America/Chicago' %}selected{% endif %}>Central Time</option>
+                            <option value="America/Los_Angeles" {% if current_user.timezone == 'America/Los_Angeles' %}selected{% endif %}>Pacific Time</option>
+                            <option value="Europe/London" {% if current_user.timezone == 'Europe/London' %}selected{% endif %}>London</option>
+                            <option value="Europe/Berlin" {% if current_user.timezone == 'Europe/Berlin' %}selected{% endif %}>Berlin</option>
+                            <option value="Asia/Singapore" {% if current_user.timezone == 'Asia/Singapore' %}selected{% endif %}>Singapore</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Change Password Modal -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('auth.change_password') }}">
+                <div class="modal-header">
+                    <h5 class="modal-title">Change Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Current Password</label>
+                        <input type="password" class="form-control" name="current_password" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">New Password</label>
+                        <input type="password" class="form-control" name="new_password" required minlength="8">
+                        <div class="form-text">Must be at least 8 characters</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Confirm New Password</label>
+                        <input type="password" class="form-control" name="confirm_password" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Change Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

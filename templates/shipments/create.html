@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}Create Shipment{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1"><i class="bi bi-plus-circle"></i> Create Shipment</h2>
+        <p class="text-muted mb-0">Set up a new cold-chain shipment</p>
+    </div>
+    <a href="{{ url_for('shipments.index') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Shipments
+    </a>
+</div>
+
+<form method="POST" action="{{ url_for('shipments.create') }}">
+    <div class="row g-4">
+        <!-- Product Information -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-box"></i> Product Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="product_name" class="form-label">Product Name *</label>
+                        <input type="text" class="form-control" id="product_name" name="product_name" required
+                               placeholder="e.g., mRNA Vaccine Raw Material">
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label for="quantity" class="form-label">Quantity *</label>
+                            <input type="number" class="form-control" id="quantity" name="quantity" required min="1">
+                        </div>
+                        <div class="col-6">
+                            <label for="unit" class="form-label">Unit</label>
+                            <select class="form-select" id="unit" name="unit">
+                                <option value="units">Units</option>
+                                <option value="kg">Kilograms</option>
+                                <option value="liters">Liters</option>
+                                <option value="vials">Vials</option>
+                                <option value="doses">Doses</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Temperature Requirements -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-thermometer-half"></i> Temperature Requirements</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="temp_zone" class="form-label">Temperature Zone *</label>
+                        <select class="form-select" id="temp_zone" name="temp_zone" required onchange="updateTempRange(this)">
+                            <option value="">Select zone...</option>
+                            <option value="refrigerated" data-min="2" data-max="8">Refrigerated (2–8°C)</option>
+                            <option value="frozen" data-min="-25" data-max="-15">Frozen (-25 to -15°C)</option>
+                            <option value="ultra_cold" data-min="-80" data-max="-60">Ultra-Cold (-80 to -60°C)</option>
+                        </select>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label for="temp_min" class="form-label">Min Temperature (°C) *</label>
+                            <input type="number" class="form-control" id="temp_min" name="temp_min" required step="0.1">
+                        </div>
+                        <div class="col-6">
+                            <label for="temp_max" class="form-label">Max Temperature (°C) *</label>
+                            <input type="number" class="form-control" id="temp_max" name="temp_max" required step="0.1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Origin -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-geo-alt"></i> Origin</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="origin_city" class="form-label">City *</label>
+                        <input type="text" class="form-control" id="origin_city" name="origin_city" required
+                               placeholder="e.g., Singapore">
+                    </div>
+                    <div class="mb-3">
+                        <label for="origin_country" class="form-label">Country *</label>
+                        <input type="text" class="form-control" id="origin_country" name="origin_country" required
+                               placeholder="e.g., Singapore">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Destination -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-flag"></i> Destination</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="destination_city" class="form-label">City *</label>
+                        <input type="text" class="form-control" id="destination_city" name="destination_city" required
+                               placeholder="e.g., Boston">
+                    </div>
+                    <div class="mb-3">
+                        <label for="destination_country" class="form-label">Country *</label>
+                        <input type="text" class="form-control" id="destination_country" name="destination_country" required
+                               placeholder="e.g., United States">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit -->
+        <div class="col-12">
+            <div class="d-flex gap-3 justify-content-end">
+                <a href="{{ url_for('shipments.index') }}" class="btn btn-outline-secondary btn-lg">Cancel</a>
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-check-lg"></i> Create Shipment
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function updateTempRange(select) {
+    const option = select.options[select.selectedIndex];
+    if (option.dataset.min) {
+        document.getElementById('temp_min').value = option.dataset.min;
+        document.getElementById('temp_max').value = option.dataset.max;
+    }
+}
+</script>
+{% endblock %}

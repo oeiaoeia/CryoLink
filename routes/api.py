@@ -151,7 +151,7 @@ def create_order():
     
     order = Order(
         order_number=order_number,
-        tenant_id=session.get('tenant_id', current_user.tenant.id),
+        tenant_id=session.get('tenant_id', current_user.tenant_id),
         status=OrderStatus.DRAFT,
         priority=data.get('priority', 'standard'),
         temperature_zone=data.get('temperature_zone'),

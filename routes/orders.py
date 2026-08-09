@@ -84,13 +84,16 @@ def create():
         
         # Parse deadline
         deadline = None
-        if delivery_deadline:
-            deadline = datetime.strptime(delivery_deadline, '%Y-%m-%d')
+        if delivery_deadline and delivery_deadline != 'dd/mm/yyyy':
+            try:
+                deadline = datetime.strptime(delivery_deadline, '%Y-%m-%d')
+            except ValueError:
+                deadline = None
         
         # Create order
         order = Order(
             order_number=order_number,
-            tenant_id=session.get('tenant_id', current_user.tenant.id),
+            tenant_id=session.get('tenant_id', current_user.tenant_id),
             status=OrderStatus.DRAFT,
             priority=priority,
             temperature_zone=temperature_zone,

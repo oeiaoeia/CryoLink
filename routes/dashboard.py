@@ -94,7 +94,7 @@ def tenant():
         flash('No tenant associated with your account.', 'error')
         return redirect(url_for('auth.select_tenant'))
     
-    tenant_id = session.get('tenant_id', current_user.tenant.id)
+    tenant_id = session.get('tenant_id', current_user.tenant_id)
     tenant = Tenant.query.get(tenant_id)
     
     if not tenant or not current_user.can_access_tenant(tenant.id):

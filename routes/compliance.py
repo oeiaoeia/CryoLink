@@ -239,8 +239,15 @@ def upload():
         doc_number = f"DOC-{datetime.utcnow().strftime('%Y%m%d')}-{ComplianceDocument.query.count() + 1:04d}"
         
         # Parse dates
-        issued = datetime.strptime(issued_date, '%Y-%m-%d') if issued_date else None
-        valid = datetime.strptime(valid_until, '%Y-%m-%d') if valid_until else None
+        try:
+            issued = datetime.strptime(issued_date, '%Y-%m-%d') if issued_date and issued_date != 'dd/mm/yyyy' else None
+        except ValueError:
+            issued = None
+            
+        try:
+            valid = datetime.strptime(valid_until, '%Y-%m-%d') if valid_until and valid_until != 'dd/mm/yyyy' else None
+        except ValueError:
+            valid = None
         
         # Create document
         document = ComplianceDocument(
@@ -250,7 +257,7 @@ def upload():
             issued_by=issued_by,
             issued_date=issued,
             valid_until=valid,
-            tenant_id=session.get('tenant_id', current_user.tenant.id),
+            tenant_id=session.get('tenant_id', current_user.tenant_id),
             shipment_id=shipment_id if shipment_id else None,
             created_by=current_user.id,
             verification_status='pending'

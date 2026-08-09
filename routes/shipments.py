@@ -190,7 +190,7 @@ def create():
         # Create shipment
         shipment = Shipment(
             shipment_number=shipment_number,
-            tenant_id=session.get('tenant_id', current_user.tenant.id),
+            tenant_id=session.get('tenant_id', current_user.tenant_id),
             product_name=product_name,
             quantity=quantity,
             unit=unit,

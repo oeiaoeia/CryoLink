@@ -41,8 +41,6 @@
         </div>
         
         <nav class="sidebar-nav">
-            {% if current_user.is_super_admin or current_user.is_operations_admin %}
-            <!-- Operations Tower Navigation -->
             <div class="nav-section">OVERVIEW</div>
             <a href="{{ url_for('dashboard.operations') }}" class="nav-link {% if request.endpoint == 'dashboard.operations' %}active{% endif %}">
                 <i class="bi bi-globe"></i>
@@ -70,38 +68,6 @@
                 <i class="bi bi-journal-text"></i>
                 <span>Audit Trail</span>
             </a>
-            {% else %}
-            <!-- Tenant Navigation -->
-            <div class="nav-section">OVERVIEW</div>
-            <a href="{{ url_for('dashboard.tenant') }}" class="nav-link {% if request.endpoint == 'dashboard.tenant' %}active{% endif %}">
-                <i class="bi bi-speedometer2"></i>
-                <span>My Dashboard</span>
-            </a>
-
-            <div class="nav-section">OPERATIONS</div>
-            <a href="{{ url_for('orders.index') }}" class="nav-link {% if 'orders' in request.endpoint %}active{% endif %}">
-                <i class="bi bi-cart3"></i>
-                <span>Procurement</span>
-            </a>
-            <a href="{{ url_for('shipments.index') }}" class="nav-link {% if 'shipments' in request.endpoint %}active{% endif %}">
-                <i class="bi bi-box-seam"></i>
-                <span>My Shipments</span>
-            </a>
-            <a href="{{ url_for('orders.suppliers') }}" class="nav-link {% if request.endpoint == 'orders.suppliers' %}active{% endif %}">
-                <i class="bi bi-people"></i>
-                <span>Suppliers</span>
-            </a>
-
-            <div class="nav-section">COMPLIANCE</div>
-            <a href="{{ url_for('compliance.index') }}" class="nav-link {% if 'compliance' in request.endpoint %}active{% endif %}">
-                <i class="bi bi-file-earmark-check"></i>
-                <span>Compliance Vault</span>
-            </a>
-            <a href="{{ url_for('compliance.audit_report') }}" class="nav-link {% if request.endpoint == 'compliance.audit_report' %}active{% endif %}">
-                <i class="bi bi-clipboard-check"></i>
-                <span>Audit Report</span>
-            </a>
-            {% endif %}
 
             <div class="nav-section">ACCOUNT</div>
             <a href="{{ url_for('auth.profile') }}" class="nav-link {% if request.endpoint == 'auth.profile' %}active{% endif %}">
@@ -124,7 +90,7 @@
         <!-- Top Navigation Bar -->
         <header class="top-navbar glass-nav">
             <div class="d-flex align-items-center gap-3">
-                <button class="btn btn-link d-md-none" id="sidebarToggle">
+                <button class="btn btn-link text-white" id="desktopSidebarToggle">
                     <i class="bi bi-list fs-4"></i>
                 </button>
                 <nav class="breadcrumb fade-in">

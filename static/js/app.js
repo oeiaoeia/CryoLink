@@ -3,15 +3,22 @@
  * Main Application JavaScript with Mobile Support
  */
 
-// Sidebar Toggle for Mobile
+// Sidebar Toggle
 document.addEventListener('DOMContentLoaded', function() {
-    const sidebarToggle = document.getElementById('sidebarToggle');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebarOverlay');
+    const desktopSidebarToggle = document.getElementById('desktopSidebarToggle');
     
-    if (sidebarToggle && sidebar) {
-        sidebarToggle.addEventListener('click', function() {
-            toggleSidebar();
+    // Restore collapsed state from localStorage
+    if (localStorage.getItem('sidebar-collapsed') === 'true') {
+        document.body.classList.add('sidebar-collapsed');
+    }
+    
+    if (desktopSidebarToggle) {
+        desktopSidebarToggle.addEventListener('click', function() {
+            document.body.classList.toggle('sidebar-collapsed');
+            
+            // Persist state
+            const isCollapsed = document.body.classList.contains('sidebar-collapsed');
+            localStorage.setItem('sidebar-collapsed', isCollapsed);
         });
     }
     

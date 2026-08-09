@@ -32,7 +32,7 @@ def operations():
         return redirect(url_for('dashboard.tenant'))
     
     # Global Statistics
-    total_tenants = Tenant.query.filter_by(status='active').count()
+    total_tenants = Tenant.query.filter_by(status=TenantStatus.ACTIVE).count()
     total_shipments = Shipment.query.count()
     active_shipments = Shipment.query.filter_by(status=ShipmentStatus.IN_TRANSIT).count()
     

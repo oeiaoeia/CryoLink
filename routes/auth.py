@@ -3,7 +3,7 @@ Authentication Routes
 """
 from flask import Blueprint, render_template, redirect, url_for, flash, request, session
 from flask_login import login_user, logout_user, login_required, current_user
-from models import User, Tenant, UserStatus
+from models import User, Tenant, TenantStatus, UserStatus
 from datetime import datetime
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
@@ -66,7 +66,7 @@ def login():
         return redirect(url_for('dashboard.index'))
 
     # Get popular tenants for quick select
-    popular_tenants = Tenant.query.filter_by(status='active').limit(6).all()
+    popular_tenants = Tenant.query.filter_by(status=TenantStatus.ACTIVE).limit(6).all()
     return render_template('auth/login.html', tenants=popular_tenants)
 
 
@@ -111,7 +111,7 @@ def select_tenant():
     
     # Get accessible tenants
     if current_user.is_super_admin or current_user.is_operations_admin:
-        tenants = Tenant.query.filter_by(status='active').all()
+        tenants = Tenant.query.filter_by(status=TenantStatus.ACTIVE).all()
     else:
         tenants = [current_user.tenant] if current_user.tenant else []
     

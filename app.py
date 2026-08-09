@@ -99,7 +99,14 @@ def create_app(config_name=None):
     # Ensure database tables exist (safe to call even if they already exist)
     with app.app_context():
         try:
+            # Drop and recreate tables to fix PostgreSQL enum types
+            # Remove this block after first successful deploy
+            import os
+            if os.environ.get('RESET_DB', 'false').lower() == 'true':
+                db.drop_all()
+                print("✓ Dropped all tables for fresh start")
             db.create_all()
+            print("✓ Database tables ready")
         except Exception as e:
             print(f"⚠ Database table creation note: {e}")
 

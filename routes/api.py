@@ -5,7 +5,7 @@ from flask import Blueprint, jsonify, request, current_app
 from flask_login import login_required, current_user
 from datetime import datetime
 from models import (
-    db, Tenant, User, Shipment, ShipmentStatus, Order, OrderStatus,
+    db, Tenant, TenantStatus, User, Shipment, ShipmentStatus, Order, OrderStatus,
     Supplier, Alert, AlertStatus, AlertSeverity, TemperatureLog,
     ComplianceDocument, AuditLog
 )
@@ -34,7 +34,7 @@ def get_tenants():
     if not (current_user.is_super_admin or current_user.is_operations_admin):
         return jsonify({'error': 'Access denied'}), 403
     
-    tenants = Tenant.query.filter_by(status='active').all()
+    tenants = Tenant.query.filter_by(status=TenantStatus.ACTIVE).all()
     return jsonify([t.to_dict() for t in tenants])
 
 

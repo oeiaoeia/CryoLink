@@ -14,9 +14,13 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'cryolink-super-secret-key-change-in-production-2025'
 
     # Database
+    # Railway provides postgres:// but SQLAlchemy 2.x requires postgresql://
     DATABASE_URL = os.environ.get('DATABASE_URL') or \
         'sqlite:///' + os.path.join(basedir, 'cryolink.db')
-    SQLALCHEMY_DATABASE_URI = DATABASE_URL  # Flask-SQLAlchemy expects this
+    if DATABASE_URL.startswith('postgres://'):
+        DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
+    SQLALCHEMY_DATABASE_URI = DATABASE_URL
+
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ECHO = False
 

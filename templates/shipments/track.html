@@ -215,11 +215,21 @@ const shipment = {
 };
 
 // Initialize map
-const map = L.map('trackMap').setView([shipment.lat, shipment.lng], 4);
+const mapBounds = [
+    [-90, -180],
+    [90, 180]
+];
+const map = L.map('trackMap', {
+    minZoom: 2,
+    maxBounds: mapBounds,
+    maxBoundsViscosity: 1.0
+}).setView([shipment.lat, shipment.lng], 4);
 
 // Add OpenStreetMap tiles
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
+    attribution: '© OpenStreetMap contributors',
+    noWrap: true,
+    bounds: mapBounds
 }).addTo(map);
 
 // Route line (simplified)

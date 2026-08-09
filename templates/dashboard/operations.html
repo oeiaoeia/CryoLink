@@ -247,11 +247,21 @@ const demoShipments = [
 const shipments = shipmentData.length > 0 ? shipmentData : demoShipments;
 
 // Initialize map
-const map = L.map('shipmentMap').setView([20, 0], 2);
+const mapBounds = [
+    [-90, -180],
+    [90, 180]
+];
+const map = L.map('shipmentMap', {
+    minZoom: 2,
+    maxBounds: mapBounds,
+    maxBoundsViscosity: 1.0
+}).setView([20, 0], 2);
 
 // Add OpenStreetMap tiles
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
+    attribution: '© OpenStreetMap contributors',
+    noWrap: true,
+    bounds: mapBounds
 }).addTo(map);
 
 // Custom icons for shipment status

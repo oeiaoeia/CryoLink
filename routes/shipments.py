@@ -206,6 +206,7 @@ def create():
         )
         
         try:
+            db.session.add(shipment)
             db.session.commit()
             flash(f'Shipment {shipment_number} created successfully.', 'success')
         except Exception as e:

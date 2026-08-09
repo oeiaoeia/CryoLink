@@ -120,9 +120,14 @@ def create():
                 )
                 db.session.add(item)
         
-        db.session.commit()
-        
-        flash(f'Order {order_number} created successfully.', 'success')
+        try:
+            db.session.commit()
+            flash(f'Order {order_number} created successfully.', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash('Failed to create order. Please try again.', 'error')
+            return redirect(url_for('orders.create'))
+
         return redirect(url_for('orders.detail', order_id=order.id))
     
     # Get available suppliers for form
@@ -151,9 +156,13 @@ def select_supplier(order_id):
     order.selected_supplier = supplier
     order.status = OrderStatus.SUPPLIER_CONFIRMED
     
-    db.session.commit()
-    
-    flash(f'Supplier {supplier.name} selected successfully.', 'success')
+    try:
+        db.session.commit()
+        flash(f'Supplier {supplier.name} selected successfully.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash('Failed to select supplier.', 'error')
+
     return redirect(url_for('orders.detail', order_id=order.id))
 
 
@@ -167,14 +176,18 @@ def approve_order(order_id):
         flash('Access denied.', 'error')
         return redirect(url_for('orders.index'))
     
-    if order.status == OrderStatus.DRAFT:
-        order.status = OrderStatus.PENDING_APPROVAL
-        db.session.commit()
-        flash('Order submitted for approval.', 'success')
-    elif order.status == OrderStatus.PENDING_APPROVAL:
-        order.status = OrderStatus.APPROVED
-        db.session.commit()
-        flash('Order approved.', 'success')
+    try:
+        if order.status == OrderStatus.DRAFT:
+            order.status = OrderStatus.PENDING_APPROVAL
+            db.session.commit()
+            flash('Order submitted for approval.', 'success')
+        elif order.status == OrderStatus.PENDING_APPROVAL:
+            order.status = OrderStatus.APPROVED
+            db.session.commit()
+            flash('Order approved.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash('Error updating order status.', 'error')
     
     return redirect(url_for('orders.detail', order_id=order.id))
 
@@ -221,9 +234,14 @@ def create_shipment(order_id):
     order.shipment_id = shipment.id
     order.status = OrderStatus.IN_TRANSIT
     
-    db.session.commit()
-    
-    flash(f'Shipment {shipment_number} created from order.', 'success')
+    try:
+        db.session.commit()
+        flash(f'Shipment {shipment_number} created from order.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash('Failed to create shipment from order.', 'error')
+        return redirect(url_for('orders.detail', order_id=order.id))
+
     return redirect(url_for('shipments.detail', shipment_id=shipment.id))
 
 

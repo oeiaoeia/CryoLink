@@ -260,7 +260,12 @@ def upload():
         document.generate_blockchain_hash()
         
         db.session.add(document)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            flash('Failed to upload document.', 'error')
+            return redirect(url_for('compliance.upload'))
         
         # Create audit log
         audit = AuditLog(
@@ -276,9 +281,13 @@ def upload():
             user_email=current_user.email
         )
         db.session.add(audit)
-        db.session.commit()
-        
-        flash(f'Document {doc_number} uploaded successfully.', 'success')
+        try:
+            db.session.commit()
+            flash(f'Document {doc_number} uploaded successfully.', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash('Failed to log document upload.', 'error')
+            
         return redirect(url_for('compliance.document_detail', doc_id=document.id))
     
     # Get shipments for dropdown
@@ -311,7 +320,11 @@ def verify_document(doc_id):
     else:
         return jsonify({'error': 'Invalid action'}), 400
     
-    db.session.commit()
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': 'Failed to verify document'}), 500
     
     return jsonify({'success': True, 'message': message})
 

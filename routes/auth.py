@@ -32,7 +32,10 @@ def login():
         if not user.check_password(password):
             user.login_attempts += 1
             from app import db
-            db.session.commit()
+            try:
+                db.session.commit()
+            except Exception:
+                db.session.rollback()
             flash('Invalid email or password.', 'error')
             return render_template('auth/login.html')
 
@@ -58,7 +61,12 @@ def login():
             session['tenant_domain'] = 'cryolink.com'
 
         from app import db
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            flash('Login error, please try again.', 'error')
+            return render_template('auth/login.html')
 
         next_page = request.args.get('next')
         if next_page:
@@ -143,8 +151,12 @@ def edit_profile():
         current_user.timezone = timezone
         
         from app import db
-        db.session.commit()
-        flash('Profile updated successfully.', 'success')
+        try:
+            db.session.commit()
+            flash('Profile updated successfully.', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash('Error updating profile.', 'error')
         return redirect(url_for('auth.profile'))
     
     return render_template('auth/profile.html')
@@ -172,7 +184,11 @@ def change_password():
     
     current_user.set_password(new_password)
     from app import db
-    db.session.commit()
+    try:
+        db.session.commit()
+        flash('Password changed successfully.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash('Error changing password.', 'error')
 
-    flash('Password changed successfully.', 'success')
     return redirect(url_for('auth.profile'))

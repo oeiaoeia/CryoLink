@@ -205,10 +205,14 @@ def create():
             created_by=current_user.id
         )
         
-        db.session.add(shipment)
-        db.session.commit()
+        try:
+            db.session.commit()
+            flash(f'Shipment {shipment_number} created successfully.', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash('Failed to create shipment. Please try again.', 'error')
+            return redirect(url_for('shipments.create'))
         
-        flash(f'Shipment {shipment_number} created successfully.', 'success')
         return redirect(url_for('shipments.detail', shipment_id=shipment.id))
     
     return render_template('shipments/create.html')
@@ -234,8 +238,13 @@ def edit(shipment_id):
         shipment.carrier_name = request.form.get('carrier_name')
         shipment.tracking_number = request.form.get('tracking_number')
         
-        db.session.commit()
-        flash('Shipment updated successfully.', 'success')
+        try:
+            db.session.commit()
+            flash('Shipment updated successfully.', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash('Failed to update shipment.', 'error')
+            
         return redirect(url_for('shipments.detail', shipment_id=shipment.id))
     
     return render_template('shipments/edit.html', shipment=shipment)
@@ -269,9 +278,13 @@ def start_shipment(shipment_id):
         user_email=current_user.email
     )
     db.session.add(audit)
-    db.session.commit()
-    
-    flash('Shipment started successfully.', 'success')
+    try:
+        db.session.commit()
+        flash('Shipment started successfully.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash('Failed to start shipment.', 'error')
+        
     return redirect(url_for('shipments.track', shipment_id=shipment.id))
 
 
@@ -289,9 +302,13 @@ def complete_shipment(shipment_id):
     shipment.actual_arrival = datetime.utcnow()
     shipment.progress_percentage = 100
     
-    db.session.commit()
-    
-    flash('Shipment completed successfully.', 'success')
+    try:
+        db.session.commit()
+        flash('Shipment completed successfully.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash('Failed to complete shipment.', 'error')
+        
     return redirect(url_for('shipments.detail', shipment_id=shipment.id))
 
 

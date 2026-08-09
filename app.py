@@ -74,11 +74,28 @@ def create_app(config_name=None):
     # Error handlers
     @app.errorhandler(404)
     def not_found_error(error):
-        return redirect(url_for('dashboard.index'))
+        from flask import render_template
+        return render_template('errors/404.html'), 404
     
     @app.errorhandler(403)
     def forbidden_error(error):
-        return redirect(url_for('dashboard.index'))
+        from flask import render_template
+        return render_template('errors/403.html'), 403
+
+    @app.errorhandler(500)
+    def internal_error(error):
+        from flask import render_template
+        db.session.rollback()
+        return render_template('errors/500.html'), 500
+
+    @app.errorhandler(Exception)
+    def unhandled_exception(error):
+        from flask import render_template
+        import traceback
+        print(f"Unhandled Exception: {error}")
+        traceback.print_exc()
+        db.session.rollback()
+        return render_template('errors/500.html'), 500
     
     # Template context processors
     @app.context_processor

@@ -261,8 +261,8 @@
     }
     
     [data-theme="dark"] body {
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
         color: #f1f5f9;
+        background-color: transparent !important;
     }
     
     /* Headings - Much Brighter in Dark Mode */
@@ -333,8 +333,10 @@
     }
     
     [data-theme="dark"] .sidebar {
-        background: linear-gradient(180deg, #020617 0%, #0f172a 100%);
-        border-right: 1px solid #1e293b;
+        background: linear-gradient(180deg, rgba(2, 6, 23, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     [data-theme="dark"] .sidebar-brand {
@@ -365,8 +367,10 @@
     }
     
     [data-theme="dark"] .top-navbar {
-        background: linear-gradient(135deg, #334155 0%, #475569 100%);
-        border-color: #64748b;
+        background: linear-gradient(135deg, rgba(51, 65, 85, 0.6) 0%, rgba(71, 85, 105, 0.7) 100%);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     [data-theme="dark"] .top-navbar .breadcrumb a {
@@ -487,8 +491,11 @@
     }
     
     [data-theme="dark"] .stats-card {
-        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-        border-color: #475569;
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(51, 65, 85, 0.4) 100%);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
     }
     
     [data-theme="dark"] .stats-card .stat-value {
@@ -504,8 +511,10 @@
     }
     
     [data-theme="dark"] .modal-content {
-        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-        border-color: #475569;
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(51, 65, 85, 0.6) 100%);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     [data-theme="dark"] .modal-header {

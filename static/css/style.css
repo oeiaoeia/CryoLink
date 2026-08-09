@@ -562,7 +562,9 @@ h4 { font-size: 1.125rem; }
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, var(--slate-900) 0%, var(--slate-800) 100%);
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(30, 41, 59, 0.9) 100%),
+                url('../img/login_bg.png') no-repeat center center fixed;
+    background-size: cover;
     padding: 2rem;
 }
 
@@ -745,4 +747,44 @@ h4 { font-size: 1.125rem; }
     .main-content {
         margin-left: 0;
     }
+}
+
+/* Background Hero Images with Parallax */
+.hero-banner {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.75) 0%, rgba(30, 41, 59, 0.85) 100%),
+                url('../img/dashboard_hero.png') no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+    padding: 3rem 2rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-banner h2 {
+    color: white !important;
+}
+
+.hero-banner p.text-muted {
+    color: #e2e8f0 !important;
+}
+
+.compliance-header {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.9) 100%),
+                url('../img/compliance_bg.png') no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+    padding: 3rem 2rem;
+    border-radius: var(--radius-lg);
+    margin-bottom: 2rem;
+}
+
+.compliance-header h2 {
+    color: white !important;
+}
+
+.compliance-header p.text-muted {
+    color: #e2e8f0 !important;
 }

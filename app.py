@@ -96,6 +96,13 @@ def create_app(config_name=None):
     register_setup_route(app)
     # -----------------------------------------------
 
+    # Ensure database tables exist (safe to call even if they already exist)
+    with app.app_context():
+        try:
+            db.create_all()
+        except Exception as e:
+            print(f"⚠ Database table creation note: {e}")
+
     return app
 
 # Create app instance

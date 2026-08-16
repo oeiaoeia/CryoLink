@@ -71,6 +71,11 @@ def create_app(config_name=None):
     def health():
         return {'status': 'healthy', 'service': 'CryoLink'}
 
+    # Favicon handler
+    @app.route('/favicon.ico')
+    def favicon():
+        return '', 200
+
     # Error handlers
     @app.errorhandler(404)
     def not_found_error(error):

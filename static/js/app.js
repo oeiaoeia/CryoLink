@@ -293,18 +293,25 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('CryoLink Liquid Glass UI initialized');
 });
 
-// Liquid Glass Spotlight Mouse Tracking
+// Throttled Liquid Glass Spotlight Mouse Tracking via requestAnimationFrame
+let isSpotlightTicking = false;
 document.addEventListener('mousemove', function(e) {
-    const cards = document.querySelectorAll('.glass-card, .liquid-glass-card, .card, .stats-card');
-    cards.forEach(card => {
-        const rect = card.getBoundingClientRect();
-        if (e.clientX >= rect.left && e.clientX <= rect.right &&
-            e.clientY >= rect.top && e.clientY <= rect.bottom) {
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            card.style.setProperty('--mouse-x', `${x}px`);
-            card.style.setProperty('--mouse-y', `${y}px`);
-        }
-    });
+    if (!isSpotlightTicking) {
+        window.requestAnimationFrame(() => {
+            const cards = document.querySelectorAll('.glass-card, .liquid-glass-card, .stats-card');
+            cards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                if (e.clientX >= rect.left - 50 && e.clientX <= rect.right + 50 &&
+                    e.clientY >= rect.top - 50 && e.clientY <= rect.bottom + 50) {
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    card.style.setProperty('--mouse-x', `${x}px`);
+                    card.style.setProperty('--mouse-y', `${y}px`);
+                }
+            });
+            isSpotlightTicking = false;
+        });
+        isSpotlightTicking = true;
+    }
 }, { passive: true });
 

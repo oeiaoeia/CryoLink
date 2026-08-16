@@ -241,6 +241,21 @@ function clearValidation(formId) {
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
-    // Add any initialization code here
-    console.log('CryoLink initialized');
+    console.log('CryoLink Liquid Glass UI initialized');
 });
+
+// Liquid Glass Spotlight Mouse Tracking
+document.addEventListener('mousemove', function(e) {
+    const cards = document.querySelectorAll('.glass-card, .liquid-glass-card, .card, .stats-card');
+    cards.forEach(card => {
+        const rect = card.getBoundingClientRect();
+        if (e.clientX >= rect.left && e.clientX <= rect.right &&
+            e.clientY >= rect.top && e.clientY <= rect.bottom) {
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            card.style.setProperty('--mouse-x', `${x}px`);
+            card.style.setProperty('--mouse-y', `${y}px`);
+        }
+    });
+}, { passive: true });
+

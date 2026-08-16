@@ -1,71 +1,201 @@
-/* CryoLink - Glassmorphism & Custom Animations
- * Modern UI Effects
+/* CryoLink - Liquid Glass UI Design System & Fluid Optics
+ * Specular Refractions, Dynamic Fluid Highlights & Wave Physics
  */
 
-/* ============ GLASSMORPHISM EFFECTS ============ */
+/* ============ LIQUID GLASS CORE SYSTEM ============ */
 
-/* Glass Card Base */
-.glass-card {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-    border-radius: 16px;
+/* Liquid Glass Card Base */
+.glass-card,
+.liquid-glass-card {
+    position: relative;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.45) 0%,
+        rgba(255, 255, 255, 0.15) 60%,
+        rgba(0, 168, 232, 0.1) 100%
+    );
+    backdrop-filter: blur(30px) saturate(210%) contrast(108%);
+    -webkit-backdrop-filter: blur(30px) saturate(210%) contrast(108%);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-top: 1.5px solid rgba(255, 255, 255, 0.85);
+    border-left: 1.5px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 
+        inset 0 1px 1px 0 rgba(255, 255, 255, 0.75),
+        inset 0 -1px 2px 0 rgba(0, 0, 0, 0.08),
+        0 14px 40px -10px rgba(0, 102, 204, 0.18),
+        0 4px 12px 0 rgba(0, 0, 0, 0.06);
+    border-radius: 20px;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                border-color 0.4s ease, 
+                background 0.4s ease;
 }
 
-/* Glass Card - Dark Mode */
-[data-theme="dark"] .glass-card {
-    background: rgba(30, 41, 59, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+/* Liquid Glass Card - Dark Mode */
+[data-theme="dark"] .glass-card,
+[data-theme="dark"] .liquid-glass-card {
+    background: linear-gradient(
+        135deg,
+        rgba(30, 41, 59, 0.65) 0%,
+        rgba(15, 23, 42, 0.55) 50%,
+        rgba(2, 6, 23, 0.7) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-top: 1.5px solid rgba(255, 255, 255, 0.28);
+    border-left: 1.5px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 
+        inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.22),
+        inset 0 -1px 2px 0 rgba(0, 0, 0, 0.5),
+        0 20px 50px -10px rgba(0, 0, 0, 0.6),
+        0 0 25px -5px rgba(0, 168, 232, 0.2);
 }
 
-/* Glass Card - Light Mode */
-[data-theme="light"] .glass-card {
-    background: rgba(255, 255, 255, 0.25);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+/* Liquid Glass Card - Light Mode */
+[data-theme="light"] .glass-card,
+[data-theme="light"] .liquid-glass-card {
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.55) 0%,
+        rgba(241, 245, 249, 0.35) 60%,
+        rgba(226, 232, 240, 0.25) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 
+        inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.9),
+        0 14px 40px -10px rgba(0, 102, 204, 0.12);
 }
 
-/* Glass Button */
-.glass-btn {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+/* Liquid Wave Hover Sheen Effect */
+.glass-card::before,
+.liquid-glass-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+        115deg,
+        transparent 35%,
+        rgba(255, 255, 255, 0.25) 48%,
+        rgba(255, 255, 255, 0.5) 50%,
+        rgba(255, 255, 255, 0.25) 52%,
+        transparent 65%
+    );
+    background-size: 250% 250%;
+    background-position: -100% -100%;
+    pointer-events: none;
+    transition: background-position 0.8s ease-in-out, opacity 0.5s ease;
+    opacity: 0;
+    z-index: 2;
+}
+
+.glass-card:hover::before,
+.liquid-glass-card:hover::before {
+    opacity: 1;
+    background-position: 150% 150%;
+}
+
+.glass-card:hover,
+.liquid-glass-card:hover {
+    transform: translateY(-6px) scale(1.012);
+    box-shadow: 
+        inset 0 2px 2px 0 rgba(255, 255, 255, 0.85),
+        inset 0 -1px 2px 0 rgba(0, 0, 0, 0.1),
+        0 24px 60px -10px rgba(0, 168, 232, 0.35),
+        0 10px 25px -5px rgba(0, 102, 204, 0.25);
+}
+
+[data-theme="dark"] .glass-card:hover,
+[data-theme="dark"] .liquid-glass-card:hover {
+    transform: translateY(-6px) scale(1.012);
+    box-shadow: 
+        inset 0 2px 2px 0 rgba(255, 255, 255, 0.38),
+        inset 0 -1px 2px 0 rgba(0, 0, 0, 0.6),
+        0 28px 70px -10px rgba(0, 0, 0, 0.8),
+        0 0 35px 2px rgba(0, 212, 255, 0.35);
+}
+
+/* Liquid Glass Button */
+.glass-btn,
+.liquid-glass-btn {
+    position: relative;
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.35) 0%,
+        rgba(255, 255, 255, 0.12) 100%
+    );
+    backdrop-filter: blur(20px) saturate(190%);
+    -webkit-backdrop-filter: blur(20px) saturate(190%);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-top: 1.5px solid rgba(255, 255, 255, 0.7);
     color: white;
-    padding: 10px 20px;
-    border-radius: 12px;
+    padding: 10px 22px;
+    border-radius: 14px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    box-shadow: 
+        inset 0 1px 1px 0 rgba(255, 255, 255, 0.6),
+        0 6px 20px -4px rgba(0, 102, 204, 0.25);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.glass-btn:hover {
-    background: rgba(255, 255, 255, 0.25);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+.glass-btn:hover,
+.liquid-glass-btn:hover {
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.5) 0%,
+        rgba(255, 255, 255, 0.22) 100%
+    );
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 
+        inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.9),
+        0 10px 25px -4px rgba(0, 168, 232, 0.4);
 }
 
-/* Glass Navigation */
+/* Liquid Glass Navigation */
 .glass-nav {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.4) 0%,
+        rgba(241, 245, 249, 0.25) 100%
+    );
+    backdrop-filter: blur(35px) saturate(220%);
+    -webkit-backdrop-filter: blur(35px) saturate(220%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 
+        inset 0 -1px 1px 0 rgba(255, 255, 255, 0.5),
+        0 10px 30px -10px rgba(0, 0, 0, 0.08);
 }
 
 [data-theme="dark"] .glass-nav {
-    background: rgba(15, 23, 42, 0.6);
+    background: linear-gradient(
+        180deg,
+        rgba(15, 23, 42, 0.75) 0%,
+        rgba(2, 6, 23, 0.85) 100%
+    );
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 
+        inset 0 -1px 1px 0 rgba(255, 255, 255, 0.15),
+        0 10px 30px -10px rgba(0, 0, 0, 0.5);
 }
 
-/* Glass Sidebar */
+/* Liquid Glass Sidebar */
 .glass-sidebar {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(20px);
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    background: linear-gradient(
+        180deg,
+        rgba(15, 23, 42, 0.85) 0%,
+        rgba(2, 6, 23, 0.92) 100%
+    );
+    backdrop-filter: blur(35px) saturate(200%);
+    -webkit-backdrop-filter: blur(35px) saturate(200%);
+    border-right: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: inset -1px 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 [data-theme="dark"] .glass-sidebar {
-    background: rgba(2, 6, 23, 0.7);
+    background: linear-gradient(
+        180deg,
+        rgba(2, 6, 23, 0.88) 0%,
+        rgba(15, 23, 42, 0.92) 100%
+    );
 }
 
 /* ============ ANIMATIONS ============ */
@@ -906,87 +1036,104 @@ html {
     );
 }
 
-/* ============ FORCE GLASSMORPHISM EVERYWHERE ============ */
+/* ============ FORCE LIQUID GLASS UI EVERYWHERE ============ */
 
-/* Force glass effect on ALL cards */
+/* Force Liquid Glass refraction on ALL cards */
 .card, .stats-card, .info-card, .data-card {
-    backdrop-filter: blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
+    backdrop-filter: blur(30px) saturate(210%) contrast(108%) !important;
+    -webkit-backdrop-filter: blur(30px) saturate(210%) contrast(108%) !important;
+    border-radius: 20px !important;
+    box-shadow: 
+        inset 0 1px 1px 0 rgba(255, 255, 255, 0.65),
+        inset 0 -1px 2px 0 rgba(0, 0, 0, 0.1),
+        0 14px 40px -10px rgba(0, 102, 204, 0.18) !important;
 }
 
-/* Force glass effect on ALL tables */
+/* Force Liquid Glass on ALL tables */
 .table, .table-responsive {
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
+    backdrop-filter: blur(24px) saturate(190%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+    border-radius: 16px !important;
 }
 
-/* Force glass effect on ALL buttons */
+/* Force Liquid Glass on ALL buttons */
 .btn, .button {
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
+    backdrop-filter: blur(20px) saturate(190%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(190%) !important;
+    border-radius: 12px !important;
+    box-shadow: 
+        inset 0 1px 1px 0 rgba(255, 255, 255, 0.6),
+        0 6px 20px -4px rgba(0, 102, 204, 0.2) !important;
 }
 
-/* Force glass effect on ALL inputs */
+/* Force Liquid Glass on ALL inputs */
 input, textarea, select, .form-control, .form-select {
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(255, 255, 255, 0.45) !important;
 }
 
-/* Force glass effect on ALL modals */
+/* Force Liquid Glass on ALL modals */
 .modal-content, .modal-dialog {
-    backdrop-filter: blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
+    backdrop-filter: blur(35px) saturate(220%) !important;
+    -webkit-backdrop-filter: blur(35px) saturate(220%) !important;
+    border-radius: 24px !important;
+    box-shadow: 
+        inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.8),
+        0 30px 80px -10px rgba(0, 0, 0, 0.4) !important;
 }
 
-/* Force glass effect on ALL dropdowns */
+/* Force Liquid Glass on ALL dropdowns */
 .dropdown-menu, .dropdown {
-    backdrop-filter: blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
+    backdrop-filter: blur(30px) saturate(210%) !important;
+    -webkit-backdrop-filter: blur(30px) saturate(210%) !important;
+    border-radius: 16px !important;
 }
 
-/* Force glass effect on ALL alerts */
+/* Force Liquid Glass on ALL alerts */
 .alert, .alert-card, .notification {
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    border-radius: 16px !important;
 }
 
-/* Force glass effect on ALL navigation */
+/* Force Liquid Glass on ALL navigation */
 .navbar, .sidebar, .top-navbar, .navigation {
-    backdrop-filter: blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
+    backdrop-filter: blur(35px) saturate(220%) !important;
+    -webkit-backdrop-filter: blur(35px) saturate(220%) !important;
 }
 
-/* Force glass effect on ALL containers */
-.container, .container-fluid, .content-wrapper {
-    /* Keep transparent */
-}
-
-/* Force glass effect on ALL badges */
+/* Force Liquid Glass on ALL badges */
 .badge, .tag, .label {
-    backdrop-filter: blur(5px) !important;
-    -webkit-backdrop-filter: blur(5px) !important;
+    backdrop-filter: blur(14px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(14px) saturate(180%) !important;
+    border-radius: 20px !important;
 }
 
-/* Force glass effect on ALL progress bars */
+/* Force Liquid Glass on ALL progress bars */
 .progress, .progress-bar {
-    backdrop-filter: blur(5px) !important;
-    -webkit-backdrop-filter: blur(5px) !important;
+    backdrop-filter: blur(10px) saturate(150%) !important;
+    -webkit-backdrop-filter: blur(10px) saturate(150%) !important;
+    border-radius: 10px !important;
 }
 
-/* Force glass effect on ALL timeline */
+/* Force Liquid Glass on ALL timeline */
 .timeline, .timeline-item {
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
 }
 
-/* Force glass effect on ALL chart containers */
+/* Force Liquid Glass on ALL chart containers */
 .chart-container, .chart-wrapper, canvas {
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    border-radius: 16px !important;
 }
 
-/* Force glass effect on ALL map containers */
+/* Force Liquid Glass on ALL map containers */
 .map-container, .map-wrapper, #shipmentMap {
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    border-radius: 20px !important;
 }

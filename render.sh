@@ -1,11 +1,14 @@
 #!/bin/bash
-# Render.com Deployment Script
+# Render.com Build Script
+set -e
+
+echo "🚀 Building CryoLink for Render.com..."
 
 # Install dependencies
 pip install -r requirements.txt
 
-# Initialize the database
+# Initialize and seed database schema
 python init_db.py
 
-# Run the app with gunicorn
-gunicorn main:app
+echo "✅ Render build complete!"
+

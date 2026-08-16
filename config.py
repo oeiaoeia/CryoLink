@@ -77,13 +77,8 @@ class DevelopmentConfig(Config):
 class ProductionConfig(Config):
     """Production configuration"""
     DEBUG = False
-    SESSION_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = os.environ.get('SESSION_COOKIE_SECURE', 'false').lower() == 'true'
     SQLALCHEMY_ECHO = False
-    # NOTE: SysLogHandler removed — it tried to connect to /dev/log,
-    # which doesn't exist on Vercel's serverless runtime and crashed
-    # every request with FLASK_ENV=production. Vercel's own logging
-    # (stdout/stderr) is captured automatically, so no custom handler
-    # is needed here.
 
 
 class TestingConfig(Config):

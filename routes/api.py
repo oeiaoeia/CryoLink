@@ -1,7 +1,7 @@
 """
 REST API Routes
 """
-from flask import Blueprint, jsonify, request, current_app
+from flask import Blueprint, jsonify, request, current_app, session
 from flask_login import login_required, current_user
 from datetime import datetime
 from models import (
@@ -55,7 +55,7 @@ def get_tenant(tenant_id):
 @login_required
 def get_shipments():
     """Get shipments"""
-    tenant_id = session.get('tenant_id') if hasattr(request, 'session') else None
+    tenant_id = session.get('tenant_id')
     
     query = Shipment.query
     if tenant_id and not (current_user.is_super_admin or current_user.is_operations_admin):
@@ -127,7 +127,7 @@ def get_shipment_location(shipment_id):
 @login_required
 def get_orders():
     """Get orders"""
-    tenant_id = session.get('tenant_id') if hasattr(request, 'session') else None
+    tenant_id = session.get('tenant_id')
     
     query = Order.query
     if tenant_id and not (current_user.is_super_admin or current_user.is_operations_admin):
@@ -217,7 +217,7 @@ def search_suppliers():
 @login_required
 def get_alerts():
     """Get alerts"""
-    tenant_id = session.get('tenant_id') if hasattr(request, 'session') else None
+    tenant_id = session.get('tenant_id')
     
     query = Alert.query
     if tenant_id and not (current_user.is_super_admin or current_user.is_operations_admin):
@@ -271,7 +271,7 @@ def resolve_alert(alert_id):
 @login_required
 def get_compliance_documents():
     """Get compliance documents"""
-    tenant_id = session.get('tenant_id') if hasattr(request, 'session') else None
+    tenant_id = session.get('tenant_id')
     
     query = ComplianceDocument.query
     if tenant_id and not (current_user.is_super_admin or current_user.is_operations_admin):
@@ -285,7 +285,7 @@ def get_compliance_documents():
 @login_required
 def get_audit_summary():
     """Get audit readiness summary"""
-    tenant_id = session.get('tenant_id') if hasattr(request, 'session') else None
+    tenant_id = session.get('tenant_id')
     
     query = ComplianceDocument.query
     if tenant_id and not (current_user.is_super_admin or current_user.is_operations_admin):
@@ -311,7 +311,7 @@ def get_audit_summary():
 @login_required
 def get_dashboard_stats():
     """Get dashboard statistics"""
-    tenant_id = session.get('tenant_id') if hasattr(request, 'session') else None
+    tenant_id = session.get('tenant_id')
     
     # Build shipment query
     shipment_query = Shipment.query
@@ -340,5 +340,4 @@ def get_dashboard_stats():
     return jsonify(stats)
 
 
-# Import session for API
-from flask import session
+

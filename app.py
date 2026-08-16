@@ -107,11 +107,7 @@ def create_app(config_name=None):
             'tenant_name': session.get('tenant_name'),
             'tenant_domain': session.get('tenant_domain')
         }
-    
-    # -------- TEMPORARY DATABASE SETUP ROUTE --------
-    from setup_db_route import register_setup_route
-    register_setup_route(app)
-    # -----------------------------------------------
+
 
     # Ensure database tables exist (safe to call even if they already exist)
     with app.app_context():

@@ -17,122 +17,96 @@ CryoLink is an intelligent, web-based multitenant platform designed for pharmace
 
 ## Tech Stack
 
-- **Backend**: Python 3.11+, Flask, SQLAlchemy
+- **Backend**: Python 3.11+, Flask, SQLAlchemy, Gunicorn
 - **Frontend**: HTML5, CSS3, JavaScript, Bootstrap 5, Chart.js
-- **Database**: PostgreSQL / SQLite
-- **Real-time**: Flask-SocketIO
+- **Database**: SQLite (Development) / PostgreSQL (Production)
 - **Authentication**: Flask-Login with bcrypt
 
-## Installation
+## Local Installation
 
 ### 1. Clone and Setup
 
 ```bash
-cd App
-python -m venv venv
+python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 2. Environment Configuration
-
-Create a `.env` file:
-
-```env
-FLASK_APP=app.py
-FLASK_ENV=development
-SECRET_KEY=your-secret-key-here
-DATABASE_URL=sqlite:///cryolink.db
-```
-
-### 3. Initialize Database
+### 2. Initialize Database
 
 ```bash
 python init_db.py
 ```
 
-### 4. Run Application
+### 3. Run Application
 
 ```bash
 python app.py
 ```
 
-Visit `http://localhost:5000`
+Visit `http://localhost:5001` (or `http://localhost:5000`)
+
+---
+
+## 🚀 Deployment on Render.com
+
+CryoLink is pre-configured for seamless deployment on **Render.com**.
+
+1. Connect your repository to **Render.com**.
+2. Create a new **Web Service**.
+3. Set the following settings:
+   - **Environment**: `Python 3`
+   - **Build Command**: `./render.sh`
+   - **Start Command**: `gunicorn main:app`
+4. Set environment variables (optional):
+   - `FLASK_ENV`: `production`
+   - `SECRET_KEY`: `your-random-secret-key`
+
+---
 
 ## Default Credentials
 
 ### Operations Admin (Internal)
-- **Email**: mysha@cryolink.com
-- **Password**: admin123
+- **Email**: `mysha@cryolink.com`
+- **Password**: `password123`
 
 ### Tenant Users
-- **PharmaCo**: raj@pharma.co / password123
-- **BioTech**: sarah@biotech.io / password123
-- **VaxCorp**: admin@vaxcorp.com / password123
+- **PharmaCo**: `raj@pharma.co` / `password123`
+- **BioTech**: `sarah@biotech.io` / `password123`
+- **VaxCorp**: `admin@vaxcorp.com` / `password123`
+
+---
 
 ## Project Structure
 
 ```
-App/
-├── app.py                 # Main application entry
-├── config.py              # Configuration settings
-├── init_db.py             # Database initialization
+CryoLink/
+├── app.py                 # Application factory & setup
+├── main.py                # Production entry point (Gunicorn)
+├── config.py              # Environment configurations
+├── init_db.py             # Database creation & seed data
+├── Procfile               # Render/Gunicorn process definition
+├── render.sh              # Render build script
+├── requirements.txt       # Dependencies
 ├── models/                # Database models
-│   ├── __init__.py
-│   ├── tenant.py          # Tenant/Organization model
-│   ├── user.py            # User authentication
-│   ├── shipment.py        # Shipment tracking
-│   ├── order.py           # Procurement orders
-│   ├── temperature.py     # Temperature logs
-│   ├── compliance.py      # Documents & compliance
-│   └── alert.py           # Alerts & notifications
-├── routes/                # API routes
-│   ├── __init__.py
-│   ├── auth.py            # Authentication
-│   ├── dashboard.py       # Dashboard views
-│   ├── shipments.py       # Shipment management
-│   ├── orders.py          # Order processing
-│   ├── compliance.py      # Compliance vault
-│   └── api.py             # REST API
-├── templates/             # HTML templates
-│   ├── base.html
-│   ├── login.html
-│   ├── dashboard/
-│   ├── shipments/
-│   ├── orders/
-│   └── compliance/
-├── static/                # Static assets
-│   ├── css/
-│   ├── js/
-│   └── images/
-└── utils/                 # Helper functions
-    ├── risk_calculator.py
-    ├── route_optimizer.py
-    └── temperature_sim.py
+│   ├── tenant.py
+│   ├── user.py
+│   ├── shipment.py
+│   ├── order.py
+│   ├── temperature.py
+│   ├── compliance.py
+│   └── alert.py
+├── routes/                # Blueprint routes
+│   ├── auth.py
+│   ├── dashboard.py
+│   ├── shipments.py
+│   ├── orders.py
+│   ├── compliance.py
+│   └── api.py
+├── templates/             # HTML Jinja templates
+└── static/                # CSS, JS, Images
 ```
-
-## API Endpoints
-
-### Authentication
-- `POST /api/login` - User login
-- `POST /api/logout` - User logout
-- `POST /api/register` - Tenant registration
-
-### Shipments
-- `GET /api/shipments` - List shipments
-- `GET /api/shipments/<id>` - Shipment details
-- `POST /api/shipments` - Create shipment
-- `GET /api/shipments/<id>/temperature` - Temperature log
-
-### Orders
-- `GET /api/orders` - List orders
-- `POST /api/orders` - Create order
-- `GET /api/orders/suppliers` - Find suppliers
-
-### Compliance
-- `GET /api/compliance/documents` - List documents
-- `POST /api/compliance/export` - Export audit report
 
 ## License
 
-MIT License - Educational/Conceptual Project
+MIT License

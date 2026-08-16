@@ -17,8 +17,10 @@ def test_all_routes():
             # Find the admin user
             admin = User.query.filter_by(email='mysha@cryolink.com').first()
             if not admin:
-                print("Admin user not found. Run setup_db first.")
-                return
+                from init_db import init_db, seed_data
+                init_db()
+                seed_data()
+                admin = User.query.filter_by(email='mysha@cryolink.com').first()
             
             # Login
             response = client.post('/auth/login', data={

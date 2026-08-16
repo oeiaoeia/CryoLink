@@ -1,7 +1,7 @@
 """
 Authentication Routes
 """
-from flask import Blueprint, render_template, redirect, url_for, flash, request, session
+from flask import Blueprint, render_template, redirect, url_for, flash, request, session, make_response
 from flask_login import login_user, logout_user, login_required, current_user
 from models import User, Tenant, TenantStatus, UserStatus
 from datetime import datetime
@@ -16,7 +16,7 @@ def login():
         return redirect(url_for('dashboard.index'))
 
     if request.method == 'POST':
-        email = 'mysha@cryolink.com'
+        email = request.form.get('email', 'mysha@cryolink.com')
         remember = request.form.get('remember', False)
 
         # Find user
@@ -68,9 +68,6 @@ def login():
 @auth_bp.route('/logout')
 def logout():
     """User logout"""
-    from flask_login import logout_user
-    from flask import session, redirect, url_for, flash, make_response
-    
     # Force logout (including remember me cookie)
     logout_user()
     

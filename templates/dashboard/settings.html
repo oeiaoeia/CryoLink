@@ -269,11 +269,36 @@ function savePreference(key, value) {
 }
 
 function saveAllSettings() {
-    // Save notification preferences
-    localStorage.setItem('cryolink_email_alerts', document.getElementById('emailAlerts').checked);
-    localStorage.setItem('cryolink_push_notifications', document.getElementById('pushNotifications').checked);
-    localStorage.setItem('cryolink_daily_digest', document.getElementById('dailyDigest').checked);
-    localStorage.setItem('cryolink_weekly_reports', document.getElementById('weekendReports').checked);
+    // 1. Theme Choice
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+    localStorage.setItem('cryolink_theme', currentTheme);
+    
+    // 2. Liquid Glass Opacity Slider
+    const opacitySlider = document.getElementById('glassOpacitySlider');
+    if (opacitySlider) {
+        localStorage.setItem('cryolink_glass_opacity', opacitySlider.value);
+        updateGlassOpacity(opacitySlider.value);
+    }
+    
+    // 3. Auto Theme & Compact Mode Switches
+    const autoTheme = document.getElementById('autoTheme');
+    if (autoTheme) localStorage.setItem('cryolink_auto_theme', autoTheme.checked);
+    
+    const compactMode = document.getElementById('compactMode');
+    if (compactMode) localStorage.setItem('cryolink_compact', compactMode.checked);
+    
+    // 4. Notification Preferences
+    const emailAlerts = document.getElementById('emailAlerts');
+    if (emailAlerts) localStorage.setItem('cryolink_email_alerts', emailAlerts.checked);
+    
+    const pushNotifications = document.getElementById('pushNotifications');
+    if (pushNotifications) localStorage.setItem('cryolink_push_notifications', pushNotifications.checked);
+    
+    const dailyDigest = document.getElementById('dailyDigest');
+    if (dailyDigest) localStorage.setItem('cryolink_daily_digest', dailyDigest.checked);
+    
+    const weekendReports = document.getElementById('weekendReports');
+    if (weekendReports) localStorage.setItem('cryolink_weekly_reports', weekendReports.checked);
     
     showToast('All settings saved successfully!', 'success');
 }

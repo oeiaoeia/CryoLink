@@ -81,7 +81,8 @@ h4 { font-size: 1.125rem; }
     background: linear-gradient(180deg, var(--slate-900) 0%, var(--slate-800) 100%);
     color: var(--slate-100);
     z-index: 1000;
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform;
+    transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 body.sidebar-collapsed .sidebar {
@@ -161,7 +162,10 @@ body.sidebar-collapsed .sidebar {
     padding-left: 1.5rem !important;
     padding-right: 1.5rem !important;
     overflow-x: hidden;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: margin-left, width, max-width;
+    transition: margin-left 0.45s cubic-bezier(0.2, 0.8, 0.2, 1),
+                width 0.45s cubic-bezier(0.2, 0.8, 0.2, 1),
+                max-width 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 body.sidebar-collapsed .main-content {

@@ -71,28 +71,21 @@ h4 { font-size: 1.125rem; }
     font-family: 'JetBrains Mono', 'Courier New', monospace;
 }
 
-/* Flexbox Wrapper Layout Architecture */
-body {
-    display: flex;
-    min-height: 100vh;
-    overflow-x: hidden;
-}
-
 /* Sidebar Navigation */
 .sidebar {
-    width: 260px;
-    flex-shrink: 0;
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
+    width: 260px;
     height: 100vh;
     background: linear-gradient(180deg, var(--slate-900) 0%, var(--slate-800) 100%);
     color: var(--slate-100);
     z-index: 1000;
-    transition: margin-left 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 body.sidebar-collapsed .sidebar {
-    margin-left: -260px;
+    transform: translateX(-100%);
 }
 
 .sidebar-brand {
@@ -156,20 +149,25 @@ body.sidebar-collapsed .sidebar {
     text-align: center;
 }
 
-/* Main Content Layout - Fluid Flex Shrinking */
+/* Main Content Layout */
 .main-content {
-    flex-grow: 1;
-    min-width: 0 !important; /* CRITICAL: Allows flex container to shrink below child content size */
-    width: 100%;
-    max-width: 100%;
+    margin-left: 260px;
+    width: calc(100% - 260px);
+    max-width: calc(100% - 260px);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     box-sizing: border-box !important;
     padding-left: 1.5rem !important;
     padding-right: 1.5rem !important;
-    overflow-x: auto;
+    overflow-x: hidden;
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body.sidebar-collapsed .main-content {
+    margin-left: 0;
+    width: 100%;
+    max-width: 100%;
 }
 
 /* Top Navigation Bar */

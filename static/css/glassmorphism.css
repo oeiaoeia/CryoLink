@@ -3,13 +3,13 @@
  */
 
 :root {
-    --glass-opacity-high: 0.32;
-    --glass-opacity-low: 0.12;
+    --glass-opacity-high: 0.22;
+    --glass-opacity-low: 0.08;
 }
 
 [data-theme="dark"] {
-    --glass-opacity-high: 0.45;
-    --glass-opacity-low: 0.28;
+    --glass-opacity-high: 0.28;
+    --glass-opacity-low: 0.15;
 }
 
 /* ============ LIQUID GLASS CORE SYSTEM ============ */

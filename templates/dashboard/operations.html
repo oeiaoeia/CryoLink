@@ -19,7 +19,7 @@
 
 <!-- Stats Row -->
 <div class="row g-4 mb-4">
-    <div class="col-md-3" data-aos="fade-up" data-aos-delay="100">
+    <div class="col-md-3" data-aos="fade-up">
         <div class="stats-card glass-card hover-lift fade-in">
             <div class="stat-icon primary">
                 <i class="bi bi-building"></i>
@@ -33,7 +33,7 @@
         </div>
     </div>
     
-    <div class="col-md-3" data-aos="fade-up" data-aos-delay="200">
+    <div class="col-md-3" data-aos="fade-up">
         <div class="stats-card glass-card hover-lift fade-in">
             <div class="stat-icon primary">
                 <i class="bi bi-box-seam"></i>
@@ -47,7 +47,7 @@
         </div>
     </div>
     
-    <div class="col-md-3" data-aos="fade-up" data-aos-delay="300">
+    <div class="col-md-3" data-aos="fade-up">
         <div class="stats-card glass-card hover-lift fade-in">
             <div class="stat-icon warning">
                 <i class="bi bi-exclamation-triangle"></i>
@@ -61,7 +61,7 @@
         </div>
     </div>
     
-    <div class="col-md-3" data-aos="fade-up" data-aos-delay="400">
+    <div class="col-md-3" data-aos="fade-up">
         <div class="stats-card glass-card hover-lift fade-in">
             <div class="stat-icon success">
                 <i class="bi bi-truck"></i>
@@ -502,7 +502,7 @@ const shipmentsChart = new Chart(ctx, {
 
     <div class="row g-4 mb-4">
         {% for item in tenant_stats %}
-        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}">
+        <div class="col-md-6 col-lg-4" data-aos="fade-up">
             <div class="card h-100 glass-card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <strong>{{ item.tenant.name }}</strong>
@@ -550,7 +550,7 @@ const shipmentsChart = new Chart(ctx, {
     </div>
 
     <div class="row g-4">
-        <div class="col-md-3" data-aos="fade-up" data-aos-delay="100">
+        <div class="col-md-3" data-aos="fade-up">
             <div class="card h-100 glass-card text-center p-3">
                 <div class="stat-icon primary mx-auto mb-3 fs-3"><i class="bi bi-shield-check"></i></div>
                 <h5>DHL Pharma ColdChain</h5>
@@ -559,7 +559,7 @@ const shipmentsChart = new Chart(ctx, {
                 <div class="text-muted small"><i class="bi bi-thermometer-half"></i> -80°C to +25°C</div>
             </div>
         </div>
-        <div class="col-md-3" data-aos="fade-up" data-aos-delay="200">
+        <div class="col-md-3" data-aos="fade-up">
             <div class="card h-100 glass-card text-center p-3">
                 <div class="stat-icon success mx-auto mb-3 fs-3"><i class="bi bi-airplane"></i></div>
                 <h5>FedEx Custom Critical</h5>
@@ -568,7 +568,7 @@ const shipmentsChart = new Chart(ctx, {
                 <div class="text-muted small"><i class="bi bi-snow"></i> Liquid Nitrogen (-196°C)</div>
             </div>
         </div>
-        <div class="col-md-3" data-aos="fade-up" data-aos-delay="300">
+        <div class="col-md-3" data-aos="fade-up">
             <div class="card h-100 glass-card text-center p-3">
                 <div class="stat-icon info mx-auto mb-3 fs-3"><i class="bi bi-box-seam"></i></div>
                 <h5>World Courier</h5>
@@ -577,7 +577,7 @@ const shipmentsChart = new Chart(ctx, {
                 <div class="text-muted small"><i class="bi bi-thermometer-snow"></i> -20°C Deep Freeze</div>
             </div>
         </div>
-        <div class="col-md-3" data-aos="fade-up" data-aos-delay="400">
+        <div class="col-md-3" data-aos="fade-up">
             <div class="card h-100 glass-card text-center p-3">
                 <div class="stat-icon warning mx-auto mb-3 fs-3"><i class="bi bi-truck"></i></div>
                 <h5>Marken GDP Express</h5>
@@ -652,7 +652,7 @@ const shipmentsChart = new Chart(ctx, {
 
     <div class="row g-4">
         {% for doc in compliance_documents %}
-        <div class="col-md-4" data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}">
+        <div class="col-md-4" data-aos="fade-up">
             <div class="card h-100 glass-card">
                 <div class="card-body">
                     <div class="d-flex align-items-center mb-3">

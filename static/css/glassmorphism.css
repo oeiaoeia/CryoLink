@@ -12,6 +12,16 @@
     --glass-opacity-low: 0.15;
 }
 
+/* GPU Acceleration for Instant Scroll Reveal */
+[data-aos],
+.glass-card,
+.liquid-glass-card,
+.stats-card {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
 /* ============ LIQUID GLASS CORE SYSTEM ============ */
 
 /* Liquid Glass Card Base */

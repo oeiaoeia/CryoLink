@@ -168,8 +168,6 @@ body.sidebar-collapsed .main-content {
 
 /* Top Navigation Bar */
 .top-navbar {
-    background: var(--bg-white);
-    border-bottom: 1px solid var(--slate-200);
     padding: 0.75rem 1.5rem;
     display: flex;
     align-items: center;
@@ -218,16 +216,11 @@ body.sidebar-collapsed .main-content {
 
 /* Cards */
 .card {
-    background: var(--bg-white);
-    border: 1px solid var(--slate-200);
     border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
 }
 
 .card-header {
     padding: 1rem 1.25rem;
-    border-bottom: 1px solid var(--slate-200);
-    background: var(--slate-50);
     border-radius: var(--radius-lg) var(--radius-lg) 0 0 !important;
     font-weight: 600;
 }
@@ -355,7 +348,6 @@ body.sidebar-collapsed .main-content {
     padding: 1rem;
     border-radius: var(--radius-md);
     border-left: 4px solid;
-    background: var(--bg-white);
     margin-bottom: 0.75rem;
 }
 
@@ -389,24 +381,17 @@ body.sidebar-collapsed .main-content {
 }
 
 .table thead th {
-    background: var(--slate-50);
-    border-bottom: 1px solid var(--slate-200);
     font-weight: 600;
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: var(--slate-500);
     padding: 0.75rem 1rem;
 }
 
 .table tbody td {
     padding: 0.875rem 1rem;
-    border-bottom: 1px solid var(--slate-100);
     vertical-align: middle;
 }
-
-.table tbody tr:hover {
-    background: var(--slate-50);
 }
 
 .table tbody tr:last-child td {

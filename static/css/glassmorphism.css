@@ -941,129 +941,98 @@ html {
 
 /* ============ MODAL GLASSMORPHISM ============ */
 
-[data-theme="dark"] .modal-content {
-    background: rgba(30, 41, 59, 0.7);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+.modal-content {
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, var(--glass-opacity-high, 0.35)) 0%,
+        rgba(241, 245, 249, var(--glass-opacity-low, 0.20)) 100%
+    ) !important;
+    backdrop-filter: blur(35px) saturate(220%) !important;
+    -webkit-backdrop-filter: blur(35px) saturate(220%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.6) !important;
+    border-top: 1.5px solid rgba(255, 255, 255, 0.9) !important;
+    box-shadow: 0 25px 70px -10px rgba(0, 102, 204, 0.2) !important;
 }
 
-[data-theme="light"] .modal-content {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+[data-theme="dark"] .modal-content {
+    background: linear-gradient(
+        135deg,
+        rgba(30, 41, 59, var(--glass-opacity-high, 0.45)) 0%,
+        rgba(15, 23, 42, var(--glass-opacity-low, 0.30)) 100%
+    ) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-top: 1.5px solid rgba(255, 255, 255, 0.35) !important;
+    box-shadow: 0 30px 80px -10px rgba(0, 0, 0, 0.6) !important;
+}
+
+.modal-header {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3) !important;
 }
 
 [data-theme="dark"] .modal-header {
-    background: rgba(51, 65, 85, 0.3);
-    border-color: rgba(255, 255, 255, 0.1);
-}
-
-[data-theme="light"] .modal-header {
-    background: rgba(255, 255, 255, 0.3);
-    border-color: rgba(255, 255, 255, 0.2);
-}
-
-[data-theme="dark"] .modal-footer {
-    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(15, 23, 42, 0.3) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
 /* ============ DROPDOWN MENUS ============ */
 
+.dropdown-menu {
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, var(--glass-opacity-high, 0.35)) 0%,
+        rgba(241, 245, 249, var(--glass-opacity-low, 0.20)) 100%
+    ) !important;
+    backdrop-filter: blur(30px) saturate(210%) !important;
+    -webkit-backdrop-filter: blur(30px) saturate(210%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.6) !important;
+    border-top: 1.5px solid rgba(255, 255, 255, 0.9) !important;
+    box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.15) !important;
+}
+
 [data-theme="dark"] .dropdown-menu {
-    background: rgba(30, 41, 59, 0.7);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: linear-gradient(
+        135deg,
+        rgba(30, 41, 59, var(--glass-opacity-high, 0.45)) 0%,
+        rgba(15, 23, 42, var(--glass-opacity-low, 0.30)) 100%
+    ) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-top: 1.5px solid rgba(255, 255, 255, 0.35) !important;
+    box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.6) !important;
 }
 
-[data-theme="light"] .dropdown-menu {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+/* ============ SEARCH & FORM INPUTS ============ */
+
+.search-input,
+.form-control,
+.form-select,
+input, textarea, select {
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, var(--glass-opacity-high, 0.25)) 0%,
+        rgba(255, 255, 255, var(--glass-opacity-low, 0.10)) 100%
+    ) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.45) !important;
+    border-top: 1.5px solid rgba(255, 255, 255, 0.7) !important;
+    box-shadow: inset 0 1px 2px 0 rgba(255, 255, 255, 0.6) !important;
 }
 
-[data-theme="dark"] .dropdown-item {
-    color: #e2e8f0;
-}
-
-[data-theme="dark"] .dropdown-item:hover {
-    background: rgba(102, 126, 234, 0.2);
-}
-
-/* ============ BADGES ============ */
-
-.badge {
-    backdrop-filter: blur(5px);
-}
-
-[data-theme="dark"] .badge {
-    background: rgba(102, 126, 234, 0.3);
-    border: 1px solid rgba(102, 126, 234, 0.4);
-}
-
-[data-theme="light"] .badge {
-    background: rgba(102, 126, 234, 0.2);
-    border: 1px solid rgba(102, 126, 234, 0.3);
-}
-
-/* ============ PROGRESS BARS ============ */
-
-[data-theme="dark"] .progress {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(5px);
-}
-
-[data-theme="light"] .progress {
-    background: rgba(0, 0, 0, 0.05);
-}
-
-/* ============ CHART CONTAINERS ============ */
-
-[data-theme="dark"] .chart-container {
-    background: rgba(30, 41, 59, 0.2);
-    backdrop-filter: blur(10px);
-    border-radius: 12px;
-    padding: 10px;
-}
-
-[data-theme="light"] .chart-container {
-    background: rgba(255, 255, 255, 0.3);
-    backdrop-filter: blur(10px);
-    border-radius: 12px;
-    padding: 10px;
-}
-
-/* ============ TIMELINE ============ */
-
-[data-theme="dark"] .timeline::before {
-    background: rgba(102, 126, 234, 0.3);
-}
-
-[data-theme="dark"] .timeline-item::before {
-    background: rgba(102, 126, 234, 0.5);
-    border: 3px solid rgba(30, 41, 59, 0.8);
-}
-
-[data-theme="light"] .timeline::before {
-    background: rgba(102, 126, 234, 0.2);
-}
-
-[data-theme="light"] .timeline-item::before {
-    background: rgba(102, 126, 234, 0.4);
-    border: 3px solid rgba(255, 255, 255, 0.8);
-}
-
-/* ============ SEARCH INPUTS ============ */
-
-[data-theme="dark"] .search-input {
-    background: rgba(30, 41, 59, 0.5);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-[data-theme="light"] .search-input {
-    background: rgba(255, 255, 255, 0.5);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+[data-theme="dark"] .search-input,
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select,
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+    background: linear-gradient(
+        180deg,
+        rgba(30, 41, 59, var(--glass-opacity-high, 0.35)) 0%,
+        rgba(15, 23, 42, var(--glass-opacity-low, 0.20)) 100%
+    ) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-top: 1.5px solid rgba(255, 255, 255, 0.25) !important;
+    color: #f1f5f9 !important;
 }
 
 /* ============ LOADING STATES ============ */

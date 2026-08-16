@@ -240,9 +240,6 @@ body.sidebar-collapsed .main-content {
 .stats-card {
     padding: 1.25rem;
     border-radius: var(--radius-lg);
-    background: var(--bg-white);
-    border: 1px solid var(--slate-200);
-    box-shadow: var(--shadow);
 }
 
 .stats-card .stat-icon {

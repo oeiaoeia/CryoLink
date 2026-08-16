@@ -43,32 +43,28 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 5000);
     });
 
-    // Auto-hide sidebar when scrolling below Global Dashboard section
-    const globalDashSection = document.getElementById('sec-global-dashboard');
-    if (globalDashSection) {
-        let isUserManuallyToggled = false;
-        
-        if (desktopSidebarToggle) {
-            desktopSidebarToggle.addEventListener('click', function() {
-                isUserManuallyToggled = true;
-            });
-        }
-        
-        window.addEventListener('scroll', function() {
-            if (isUserManuallyToggled) return;
-            
-            const dashBottom = globalDashSection.offsetTop + globalDashSection.offsetHeight - 120;
-            if (window.scrollY > dashBottom) {
-                if (!document.body.classList.contains('sidebar-collapsed')) {
-                    document.body.classList.add('sidebar-collapsed');
-                }
-            } else {
-                if (document.body.classList.contains('sidebar-collapsed')) {
-                    document.body.classList.remove('sidebar-collapsed');
-                }
-            }
-        }, { passive: true });
+    // Auto-hide sidebar early upon scrolling down (well before Tenant Management)
+    let isUserManuallyToggled = false;
+    if (desktopSidebarToggle) {
+        desktopSidebarToggle.addEventListener('click', function() {
+            isUserManuallyToggled = true;
+        });
     }
+    
+    window.addEventListener('scroll', function() {
+        if (isUserManuallyToggled) return;
+        
+        // Hide sidebar early at 80px scroll offset
+        if (window.scrollY > 80) {
+            if (!document.body.classList.contains('sidebar-collapsed')) {
+                document.body.classList.add('sidebar-collapsed');
+            }
+        } else {
+            if (document.body.classList.contains('sidebar-collapsed')) {
+                document.body.classList.remove('sidebar-collapsed');
+            }
+        }
+    }, { passive: true });
 
     // IntersectionObserver ScrollSpy for Single-Page Continuous Scroll Navigation
     const sections = document.querySelectorAll('section[id^="sec-"]');

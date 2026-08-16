@@ -496,44 +496,41 @@
         border: 1px solid rgba(6, 182, 212, 0.3);
     }
     
+    /* Liquid Glass Stats Cards Override */
     [data-theme="dark"] .stats-card {
-        background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(51, 65, 85, 0.4) 100%);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        background: linear-gradient(135deg, rgba(12, 18, 30, var(--glass-opacity-high, 0.28)) 0%, rgba(4, 8, 16, var(--glass-opacity-low, 0.15)) 100%) !important;
+        backdrop-filter: blur(24px) saturate(190%) !important;
+        -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+        border: 1px solid rgba(255, 255, 255, 0.14) !important;
+        border-top: 1.5px solid rgba(255, 255, 255, 0.35) !important;
+        box-shadow: inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.2), 0 16px 40px -10px rgba(0, 0, 0, 0.6) !important;
+        border-radius: 20px !important;
+    }
+    
+    [data-theme="light"] .stats-card {
+        background: linear-gradient(135deg, rgba(255, 255, 255, var(--glass-opacity-high, 0.35)) 0%, rgba(240, 244, 248, var(--glass-opacity-low, 0.15)) 100%) !important;
+        backdrop-filter: blur(24px) saturate(190%) !important;
+        -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+        border: 1px solid rgba(0, 102, 204, 0.20) !important;
+        border-top: 1.5px solid rgba(255, 255, 255, 0.95) !important;
+        box-shadow: inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.9), 0 14px 35px -8px rgba(0, 51, 102, 0.12), 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+        border-radius: 20px !important;
     }
     
     [data-theme="dark"] .stats-card .stat-value {
-        color: #f1f5f9;
+        color: #ffffff !important;
     }
     
     [data-theme="dark"] .stats-card .stat-label {
-        color: #94a3b8;
+        color: #cbd5e1 !important;
     }
     
-    [data-theme="dark"] .progress {
-        background: #334155;
+    [data-theme="light"] .stats-card .stat-value {
+        color: #0f172a !important;
     }
     
-    [data-theme="dark"] .modal-content {
-        background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(51, 65, 85, 0.6) 100%);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    
-    [data-theme="dark"] .modal-header {
-        border-color: #475569;
-    }
-    
-    [data-theme="dark"] .modal-body {
-        color: #e2e8f0;
-    }
-    
-    [data-theme="dark"] .dropdown-menu {
-        background: #1e293b;
-        border-color: #475569;
+    [data-theme="light"] .stats-card .stat-label {
+        color: #475569 !important;
     }
     
     [data-theme="dark"] .dropdown-item {

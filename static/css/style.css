@@ -149,13 +149,17 @@ h4 { font-size: 1.125rem; }
     text-align: center;
 }
 
-/* Main Content */
+/* Main Content Layout Containment */
 .main-content {
     margin-left: 260px;
+    width: calc(100% - 260px);
+    max-width: calc(100% - 260px);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    transition: margin-left 0.3s ease;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 body.sidebar-collapsed .sidebar {
@@ -164,6 +168,8 @@ body.sidebar-collapsed .sidebar {
 
 body.sidebar-collapsed .main-content {
     margin-left: 0;
+    width: 100%;
+    max-width: 100%;
 }
 
 /* Top Navigation Bar */

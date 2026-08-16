@@ -120,14 +120,20 @@ input, textarea, select {
     opacity: 1;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1100px) {
     .sidebar {
         transform: translateX(-100%);
     }
     
     .sidebar.show {
         transform: translateX(0);
-        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
+        box-shadow: 4px 0 35px rgba(0, 0, 0, 0.4);
+    }
+
+    .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
     }
 }
 

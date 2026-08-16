@@ -39,7 +39,7 @@
             </div>
             <div class="card-body p-0">
                 {% for excursion in excursions %}
-                <div class="p-3 border-bottom">
+                <div class="p-3 {% if not loop.last %}border-bottom{% endif %}">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
                             <span class="badge badge-{{ 'danger' if excursion.severity in ['high', 'critical'] else 'warning' }}">

@@ -187,7 +187,7 @@
             </div>
             <div class="card-body p-0">
                 {% for alert in tenant_alerts %}
-                <div class="p-3 border-bottom {% if loop.last %}border-0{% endif %}">
+                <div class="p-3 {% if not loop.last %}border-bottom{% endif %}">
                     <div class="d-flex justify-content-between align-items-start mb-1">
                         <strong class="small">{{ alert.get_icon() }} {{ alert.title[:40] }}{% if alert.title|length > 40 %}...{% endif %}</strong>
                         <span class="badge badge-{{ 'danger' if alert.severity.value == 'critical' else 'warning' if alert.severity.value == 'high' else 'secondary' }}">
@@ -239,7 +239,7 @@
             </div>
             <div class="card-body p-0">
                 {% for shipment in upcoming_deliveries %}
-                <div class="p-3 border-bottom {% if loop.last %}border-0{% endif %}">
+                <div class="p-3 {% if not loop.last %}border-bottom{% endif %}">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
                             <strong class="small">{{ shipment.shipment_number }}</strong>

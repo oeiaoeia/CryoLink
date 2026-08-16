@@ -1147,3 +1147,18 @@ input, textarea, select, .form-control, .form-select {
     -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
     border-radius: 20px !important;
 }
+
+/* Translucent Liquid Dividers - Remove Harsh White Lines */
+.border-bottom {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="light"] .border-bottom {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+
+.border-0,
+.border-bottom.border-0 {
+    border: none !important;
+    border-bottom: none !important;
+}

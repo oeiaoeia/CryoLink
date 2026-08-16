@@ -42,6 +42,55 @@ document.addEventListener('DOMContentLoaded', function() {
             bsAlert.close();
         }, 5000);
     });
+
+    // IntersectionObserver ScrollSpy for Single-Page Continuous Scroll Navigation
+    const sections = document.querySelectorAll('section[id^="sec-"]');
+    if (sections.length > 0) {
+        const navLinks = document.querySelectorAll('#sidebarNav .nav-link[data-section]');
+        
+        // Smooth scroll on sidebar link click
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                const targetId = this.getAttribute('data-section');
+                const targetEl = document.getElementById(targetId);
+                if (targetEl) {
+                    e.preventDefault();
+                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    
+                    // Update active class
+                    navLinks.forEach(nl => nl.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Update URL hash without scroll jump
+                    history.pushState(null, null, '#' + targetId);
+                }
+            });
+        });
+
+        // IntersectionObserver for scroll tracking
+        const observerOptions = {
+            root: null,
+            rootMargin: '-20% 0px -60% 0px',
+            threshold: 0
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.id;
+                    navLinks.forEach(link => {
+                        if (link.getAttribute('data-section') === id) {
+                            link.classList.add('active');
+                        } else {
+                            link.classList.remove('active');
+                        }
+                    });
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => observer.observe(section));
+    }
 });
 
 // Toggle Sidebar

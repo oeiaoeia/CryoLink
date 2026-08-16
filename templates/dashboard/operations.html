@@ -2,7 +2,7 @@
 
 {% block title %}Operations Control Tower{% endblock %}
 
-{% block content %}
+<section id="sec-global-dashboard" class="mb-5" data-aos="fade-up">
 <div class="d-flex justify-content-between align-items-center mb-4" data-aos="fade-down">
     <div>
         <h2 class="mb-1">🌍 Operations Control Tower</h2>
@@ -485,6 +485,306 @@ const shipmentsChart = new Chart(ctx, {
     }]
 });
 </script>
+</section>
+
+<!-- SECTION 2: TENANT MANAGEMENT -->
+<section id="sec-tenant-management" class="mb-5 pt-4 border-top border-white border-opacity-10" data-aos="fade-up">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="mb-1"><i class="bi bi-building me-2"></i>Tenant Management</h3>
+            <p class="text-muted mb-0">Multi-tenant pharmaceutical client overview & provisioning</p>
+        </div>
+        <a href="{{ url_for('dashboard.tenant_management') }}" class="btn btn-sm btn-outline-primary glass-btn">
+            <i class="bi bi-box-arrow-up-right me-1"></i> Full Workspace
+        </a>
+    </div>
+
+    <div class="row g-4 mb-4">
+        {% for item in tenant_stats %}
+        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}">
+            <div class="card h-100 glass-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <strong>{{ item.tenant.name }}</strong>
+                    <span class="badge badge-success">{{ item.tenant.status.value }}</span>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3"><i class="bi bi-globe me-1"></i>{{ item.tenant.domain }}</p>
+                    <div class="row g-2 text-center">
+                        <div class="col-4">
+                            <div class="p-2 border rounded glass-card">
+                                <div class="fw-bold fs-5 text-primary">{{ item.stats.shipments.total }}</div>
+                                <div class="text-muted small">Shipments</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-2 border rounded glass-card">
+                                <div class="fw-bold fs-5 text-success">{{ item.stats.orders.total }}</div>
+                                <div class="text-muted small">Orders</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-2 border rounded glass-card">
+                                <div class="fw-bold fs-5 text-warning">{{ item.stats.alerts.unresolved }}</div>
+                                <div class="text-muted small">Alerts</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- SECTION 3: CARRIER NETWORK -->
+<section id="sec-carrier-network" class="mb-5 pt-4 border-top border-white border-opacity-10" data-aos="fade-up">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="mb-1"><i class="bi bi-truck me-2"></i>Carrier Network</h3>
+            <p class="text-muted mb-0">Global logistics partners, SLAs, and temperature compliance ratings</p>
+        </div>
+        <a href="{{ url_for('dashboard.carrier_network') }}" class="btn btn-sm btn-outline-primary glass-btn">
+            <i class="bi bi-box-arrow-up-right me-1"></i> Full Network
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-3" data-aos="fade-up" data-aos-delay="100">
+            <div class="card h-100 glass-card text-center p-3">
+                <div class="stat-icon primary mx-auto mb-3 fs-3"><i class="bi bi-shield-check"></i></div>
+                <h5>DHL Pharma ColdChain</h5>
+                <p class="text-muted small mb-2">Air & Ground Logistics</p>
+                <div class="badge badge-success mb-2">99.4% On-Time GDP</div>
+                <div class="text-muted small"><i class="bi bi-thermometer-half"></i> -80°C to +25°C</div>
+            </div>
+        </div>
+        <div class="col-md-3" data-aos="fade-up" data-aos-delay="200">
+            <div class="card h-100 glass-card text-center p-3">
+                <div class="stat-icon success mx-auto mb-3 fs-3"><i class="bi bi-airplane"></i></div>
+                <h5>FedEx Custom Critical</h5>
+                <p class="text-muted small mb-2">Express Cryo Air Cargo</p>
+                <div class="badge badge-success mb-2">98.9% On-Time GDP</div>
+                <div class="text-muted small"><i class="bi bi-snow"></i> Liquid Nitrogen (-196°C)</div>
+            </div>
+        </div>
+        <div class="col-md-3" data-aos="fade-up" data-aos-delay="300">
+            <div class="card h-100 glass-card text-center p-3">
+                <div class="stat-icon info mx-auto mb-3 fs-3"><i class="bi bi-box-seam"></i></div>
+                <h5>World Courier</h5>
+                <p class="text-muted small mb-2">Specialty Clinical Logistics</p>
+                <div class="badge badge-success mb-2">99.7% On-Time GDP</div>
+                <div class="text-muted small"><i class="bi bi-thermometer-snow"></i> -20°C Deep Freeze</div>
+            </div>
+        </div>
+        <div class="col-md-3" data-aos="fade-up" data-aos-delay="400">
+            <div class="card h-100 glass-card text-center p-3">
+                <div class="stat-icon warning mx-auto mb-3 fs-3"><i class="bi bi-truck"></i></div>
+                <h5>Marken GDP Express</h5>
+                <p class="text-muted small mb-2">Direct-to-Patient Bio</p>
+                <div class="badge badge-primary mb-2">97.8% On-Time GDP</div>
+                <div class="text-muted small"><i class="bi bi-geo-alt"></i> Global Dedicated Hubs</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SECTION 4: RISK CONTROL -->
+<section id="sec-risk-control" class="mb-5 pt-4 border-top border-white border-opacity-10" data-aos="fade-up">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="mb-1"><i class="bi bi-exclamation-triangle me-2"></i>Risk Control & Alerts</h3>
+            <p class="text-muted mb-0">Real-time temperature excursions & risk mitigation protocols</p>
+        </div>
+        <a href="{{ url_for('dashboard.risk_control') }}" class="btn btn-sm btn-outline-primary glass-btn">
+            <i class="bi bi-box-arrow-up-right me-1"></i> Risk Console
+        </a>
+    </div>
+
+    <div class="card glass-card">
+        <div class="card-header">
+            <i class="bi bi-bell"></i> Active Monitoring Alerts Log
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Severity</th>
+                            <th>Alert Title</th>
+                            <th>Shipment ID</th>
+                            <th>Timestamp</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for alert in all_alerts %}
+                        <tr>
+                            <td>
+                                <span class="badge badge-{{ 'danger' if alert.severity.value == 'Critical' else 'warning' if alert.severity.value == 'High' else 'info' }}">
+                                    {{ alert.severity.value }}
+                                </span>
+                            </td>
+                            <td><strong>{{ alert.title }}</strong></td>
+                            <td><code>{{ alert.shipment.tracking_number if alert.shipment else 'N/A' }}</code></td>
+                            <td class="text-muted small">{{ alert.created_at.strftime('%Y-%m-%d %H:%M') if alert.created_at else 'Just now' }}</td>
+                            <td><span class="badge badge-secondary">{{ alert.status.value }}</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SECTION 5: COMPLIANCE HUB -->
+<section id="sec-compliance-hub" class="mb-5 pt-4 border-top border-white border-opacity-10" data-aos="fade-up">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="mb-1"><i class="bi bi-file-earmark-check me-2"></i>Compliance Hub</h3>
+            <p class="text-muted mb-0">GDP certificates, release documentation & regulatory approvals</p>
+        </div>
+        <a href="{{ url_for('compliance.index') }}" class="btn btn-sm btn-outline-primary glass-btn">
+            <i class="bi bi-box-arrow-up-right me-1"></i> Open Hub
+        </a>
+    </div>
+
+    <div class="row g-4">
+        {% for doc in compliance_documents %}
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}">
+            <div class="card h-100 glass-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="bi bi-file-earmark-pdf fs-2 text-danger me-3"></i>
+                        <div>
+                            <h6 class="mb-0">{{ doc.title }}</h6>
+                            <small class="text-muted">{{ doc.document_type.value if doc.document_type else 'Document' }}</small>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge badge-success"><i class="bi bi-check-circle"></i> Verified</span>
+                        <small class="text-muted">{{ doc.created_at.strftime('%Y-%m-%d') if doc.created_at else '' }}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- SECTION 6: AUDIT TRAIL -->
+<section id="sec-audit-log" class="mb-5 pt-4 border-top border-white border-opacity-10" data-aos="fade-up">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="mb-1"><i class="bi bi-journal-text me-2"></i>Audit Trail</h3>
+            <p class="text-muted mb-0">Immutable system activity logs and chain-of-custody tracking</p>
+        </div>
+        <a href="{{ url_for('compliance.audit_log') }}" class="btn btn-sm btn-outline-primary glass-btn">
+            <i class="bi bi-box-arrow-up-right me-1"></i> Full Trail
+        </a>
+    </div>
+
+    <div class="card glass-card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Action</th>
+                            <th>Entity</th>
+                            <th>User</th>
+                            <th>IP Address</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in audit_logs %}
+                        <tr>
+                            <td class="text-muted small">{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') if log.timestamp else '' }}</td>
+                            <td><span class="badge badge-primary">{{ log.action }}</span></td>
+                            <td><code>{{ log.entity_type }} #{{ log.entity_id }}</code></td>
+                            <td><strong>{{ log.user.full_name if log.user else 'System' }}</strong></td>
+                            <td class="text-muted small">{{ log.ip_address or '127.0.0.1' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SECTION 7: PROFILE -->
+<section id="sec-profile" class="mb-5 pt-4 border-top border-white border-opacity-10" data-aos="fade-up">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="mb-1"><i class="bi bi-person-circle me-2"></i>User Profile</h3>
+            <p class="text-muted mb-0">Account credentials, role permissions, and active session security</p>
+        </div>
+        <a href="{{ url_for('auth.profile') }}" class="btn btn-sm btn-outline-primary glass-btn">
+            <i class="bi bi-box-arrow-up-right me-1"></i> Profile Details
+        </a>
+    </div>
+
+    <div class="card glass-card p-4">
+        <div class="row align-items-center">
+            <div class="col-auto">
+                <div class="user-avatar fs-2" style="width: 72px; height: 72px; font-size: 1.8rem; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: linear-gradient(135deg, #0066CC 0%, #00A8E8 100%); color: white;">
+                    {{ current_user.first_name[0] }}{{ current_user.last_name[0] }}
+                </div>
+            </div>
+            <div class="col ms-3">
+                <h4 class="mb-1">{{ current_user.full_name }}</h4>
+                <p class="text-muted mb-2"><i class="bi bi-envelope me-1"></i>{{ current_user.email }}</p>
+                <div class="d-flex gap-2">
+                    <span class="badge badge-primary"><i class="bi bi-shield-lock me-1"></i>{{ current_user.role.value }}</span>
+                    {% if current_user.tenant %}
+                    <span class="badge badge-secondary"><i class="bi bi-building me-1"></i>{{ current_user.tenant.name }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SECTION 8: SETTINGS -->
+<section id="sec-settings" class="mb-5 pt-4 border-top border-white border-opacity-10" data-aos="fade-up">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="mb-1"><i class="bi bi-gear me-2"></i>Platform Settings</h3>
+            <p class="text-muted mb-0">Theme appearance, Liquid Glass opacity, and alert preferences</p>
+        </div>
+        <a href="{{ url_for('dashboard.settings') }}" class="btn btn-sm btn-outline-primary glass-btn">
+            <i class="bi bi-box-arrow-up-right me-1"></i> Full Settings
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card h-100 glass-card p-4">
+                <h5 class="mb-3"><i class="bi bi-palette me-2"></i>Theme Mode</h5>
+                <div class="d-flex gap-3">
+                    <button class="btn btn-outline-primary glass-btn flex-fill" onclick="setTheme('light')">
+                        <i class="bi bi-sun-fill me-1"></i> Light Glass
+                    </button>
+                    <button class="btn btn-outline-primary glass-btn flex-fill" onclick="setTheme('dark')">
+                        <i class="bi bi-moon-fill me-1"></i> Dark Crystal
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card h-100 glass-card p-4">
+                <h5 class="mb-3"><i class="bi bi-sliders me-2"></i>Liquid Glass Transparency</h5>
+                <input type="range" class="form-range" id="opSecSlider" min="10" max="90" value="40" oninput="updateGlassOpacity(this.value)">
+                <div class="d-flex justify-content-between text-muted small mt-2">
+                    <span>Vibrant Clear (10%)</span>
+                    <span>Frosted Glass (90%)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 <!-- Tenant Details Modal -->
 <div class="modal fade" id="tenantDetailsModal" tabindex="-1">

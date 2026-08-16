@@ -54,41 +54,41 @@
             </div>
         </div>
         
-        <nav class="sidebar-nav">
+        <nav class="sidebar-nav" id="sidebarNav">
             <div class="nav-section">OVERVIEW</div>
-            <a href="{{ url_for('dashboard.operations') }}" class="nav-link {% if request.endpoint == 'dashboard.operations' %}active{% endif %}">
+            <a href="{{ url_for('dashboard.operations') }}#sec-global-dashboard" data-section="sec-global-dashboard" class="nav-link {% if request.endpoint == 'dashboard.operations' %}active{% endif %}">
                 <i class="bi bi-globe"></i>
                 <span>Global Dashboard</span>
             </a>
-            <a href="{{ url_for('dashboard.tenant_management') }}" class="nav-link {% if request.endpoint == 'dashboard.tenant_management' %}active{% endif %}">
+            <a href="{{ url_for('dashboard.operations') }}#sec-tenant-management" data-section="sec-tenant-management" class="nav-link {% if request.endpoint == 'dashboard.tenant_management' %}active{% endif %}">
                 <i class="bi bi-building"></i>
                 <span>Tenant Management</span>
             </a>
-            <a href="{{ url_for('dashboard.carrier_network') }}" class="nav-link {% if request.endpoint == 'dashboard.carrier_network' %}active{% endif %}">
+            <a href="{{ url_for('dashboard.operations') }}#sec-carrier-network" data-section="sec-carrier-network" class="nav-link {% if request.endpoint == 'dashboard.carrier_network' %}active{% endif %}">
                 <i class="bi bi-truck"></i>
                 <span>Carrier Network</span>
             </a>
-            <a href="{{ url_for('dashboard.risk_control') }}" class="nav-link {% if request.endpoint == 'dashboard.risk_control' %}active{% endif %}">
+            <a href="{{ url_for('dashboard.operations') }}#sec-risk-control" data-section="sec-risk-control" class="nav-link {% if request.endpoint == 'dashboard.risk_control' %}active{% endif %}">
                 <i class="bi bi-exclamation-triangle"></i>
                 <span>Risk Control</span>
             </a>
 
             <div class="nav-section">COMPLIANCE</div>
-            <a href="{{ url_for('compliance.index') }}" class="nav-link {% if 'compliance' in request.endpoint %}active{% endif %}">
+            <a href="{{ url_for('dashboard.operations') }}#sec-compliance-hub" data-section="sec-compliance-hub" class="nav-link {% if 'compliance' in request.endpoint and request.endpoint != 'compliance.audit_log' %}active{% endif %}">
                 <i class="bi bi-file-earmark-text"></i>
                 <span>Compliance Hub</span>
             </a>
-            <a href="{{ url_for('compliance.audit_log') }}" class="nav-link {% if request.endpoint == 'compliance.audit_log' %}active{% endif %}">
+            <a href="{{ url_for('dashboard.operations') }}#sec-audit-log" data-section="sec-audit-log" class="nav-link {% if request.endpoint == 'compliance.audit_log' %}active{% endif %}">
                 <i class="bi bi-journal-text"></i>
                 <span>Audit Trail</span>
             </a>
 
             <div class="nav-section">ACCOUNT</div>
-            <a href="{{ url_for('auth.profile') }}" class="nav-link {% if request.endpoint == 'auth.profile' %}active{% endif %}">
+            <a href="{{ url_for('dashboard.operations') }}#sec-profile" data-section="sec-profile" class="nav-link {% if request.endpoint == 'auth.profile' %}active{% endif %}">
                 <i class="bi bi-person-circle"></i>
                 <span>Profile</span>
             </a>
-            <a href="{{ url_for('dashboard.settings') }}" class="nav-link {% if request.endpoint == 'dashboard.settings' %}active{% endif %}">
+            <a href="{{ url_for('dashboard.operations') }}#sec-settings" data-section="sec-settings" class="nav-link {% if request.endpoint == 'dashboard.settings' %}active{% endif %}">
                 <i class="bi bi-gear"></i>
                 <span>Settings</span>
             </a>

@@ -73,6 +73,13 @@ def operations():
     # Carrier Performance (placeholder)
     carrier_performance = 94  # Would calculate from historical data
     
+    # Additional section data for unified continuous scroll
+    from models import AuditLog, ComplianceDocument
+    compliance_documents = ComplianceDocument.query.order_by(ComplianceDocument.created_at.desc()).limit(6).all()
+    audit_logs = AuditLog.query.order_by(AuditLog.created_at.desc()).limit(8).all()
+    all_alerts = Alert.query.order_by(Alert.created_at.desc()).limit(8).all()
+    recent_shipments = Shipment.query.order_by(Shipment.created_at.desc()).limit(6).all()
+    
     return render_template('dashboard/operations.html',
                          total_tenants=total_tenants,
                          total_shipments=total_shipments,
@@ -81,9 +88,14 @@ def operations():
                          active_alerts=active_alerts,
                          shipments_by_status=shipments_by_status,
                          recent_alerts=recent_alerts,
+                         all_alerts=all_alerts,
                          tenant_stats=tenant_stats,
+                         tenants=tenants,
                          map_shipments=map_shipments,
-                         carrier_performance=carrier_performance)
+                         carrier_performance=carrier_performance,
+                         compliance_documents=compliance_documents,
+                         audit_logs=audit_logs,
+                         recent_shipments=recent_shipments)
 
 
 @dashboard_bp.route('/tenant')

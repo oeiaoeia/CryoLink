@@ -50,6 +50,24 @@
                 
                 <hr>
                 
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label for="glassOpacitySlider" class="form-label fw-semibold mb-0">
+                            <i class="bi bi-droplet-half text-primary me-1"></i> Liquid Glass Transparency
+                        </label>
+                        <span class="badge badge-info text-light" id="glassOpacityValue">40%</span>
+                    </div>
+                    <p class="text-muted small mb-2">Adjust the sheer transparency of cards, widgets, and navigation panels</p>
+                    <input type="range" class="form-range" id="glassOpacitySlider" min="10" max="90" step="5" value="40" oninput="updateGlassOpacity(this.value)">
+                    <div class="d-flex justify-content-between text-muted small" style="font-size: 0.75rem;">
+                        <span>Sheer (10%)</span>
+                        <span>Balanced (40%)</span>
+                        <span>Solid (90%)</span>
+                    </div>
+                </div>
+
+                <hr>
+                
                 <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" id="autoTheme" onchange="toggleAutoTheme()">
                     <label class="form-check-label" for="autoTheme">
@@ -291,6 +309,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load theme
     const savedTheme = localStorage.getItem('cryolink_theme') || 'light';
     setTheme(savedTheme);
+    
+    // Load glass opacity
+    const savedOpacity = localStorage.getItem('cryolink_glass_opacity') || '40';
+    const slider = document.getElementById('glassOpacitySlider');
+    if (slider) slider.value = savedOpacity;
+    updateGlassOpacity(savedOpacity);
     
     // Load auto theme
     const autoTheme = localStorage.getItem('cryolink_auto_theme') === 'true';

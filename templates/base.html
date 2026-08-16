@@ -206,10 +206,23 @@
         }
     }
     
-    // Load saved theme on page load
+    function updateGlassOpacity(val) {
+        const opacityHigh = (val / 100).toFixed(2);
+        const opacityLow = (val / 250).toFixed(2);
+        document.documentElement.style.setProperty('--glass-opacity-high', opacityHigh);
+        document.documentElement.style.setProperty('--glass-opacity-low', opacityLow);
+        const badge = document.getElementById('glassOpacityValue');
+        if (badge) badge.textContent = val + '%';
+        localStorage.setItem('cryolink_glass_opacity', val);
+    }
+
+    // Load saved theme and glass transparency on page load
     document.addEventListener('DOMContentLoaded', function() {
         const savedTheme = localStorage.getItem('cryolink_theme') || 'light';
         setTheme(savedTheme);
+        
+        const savedOpacity = localStorage.getItem('cryolink_glass_opacity') || '40';
+        updateGlassOpacity(savedOpacity);
         
         // Check for system preference if auto theme is enabled
         if (localStorage.getItem('cryolink_auto_theme') === 'true') {

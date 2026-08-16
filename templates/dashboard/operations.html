@@ -2,6 +2,7 @@
 
 {% block title %}Operations Control Tower{% endblock %}
 
+{% block content %}
 <section id="sec-global-dashboard" class="mb-5" data-aos="fade-up">
 <div class="d-flex justify-content-between align-items-center mb-4" data-aos="fade-down">
     <div>
@@ -512,20 +513,20 @@ const shipmentsChart = new Chart(ctx, {
                     <div class="row g-2 text-center">
                         <div class="col-4">
                             <div class="p-2 border rounded glass-card">
-                                <div class="fw-bold fs-5 text-primary">{{ item.stats.shipments.total }}</div>
-                                <div class="text-muted small">Shipments</div>
+                                <div class="fw-bold fs-5 text-primary">{{ item.stats.active_shipments }}</div>
+                                <div class="text-muted small">Active Shipments</div>
                             </div>
                         </div>
                         <div class="col-4">
                             <div class="p-2 border rounded glass-card">
-                                <div class="fw-bold fs-5 text-success">{{ item.stats.orders.total }}</div>
-                                <div class="text-muted small">Orders</div>
+                                <div class="fw-bold fs-5 text-success">{{ item.stats.pending_orders }}</div>
+                                <div class="text-muted small">Pending Orders</div>
                             </div>
                         </div>
                         <div class="col-4">
                             <div class="p-2 border rounded glass-card">
-                                <div class="fw-bold fs-5 text-warning">{{ item.stats.alerts.unresolved }}</div>
-                                <div class="text-muted small">Alerts</div>
+                                <div class="fw-bold fs-5 text-info">{{ item.stats.total_documents }}</div>
+                                <div class="text-muted small">Documents</div>
                             </div>
                         </div>
                     </div>

@@ -66,31 +66,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }, { passive: true });
 
-    // IntersectionObserver ScrollSpy for Single-Page Continuous Scroll Navigation
+    // IntersectionObserver ScrollSpy for Page Section Tracking
     const sections = document.querySelectorAll('section[id^="sec-"]');
     if (sections.length > 0) {
-        const navLinks = document.querySelectorAll('#sidebarNav .nav-link[data-section]');
+        const navLinks = document.querySelectorAll('#sidebarNav .nav-link');
         
-        // Smooth scroll on sidebar link click
-        navLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                const targetId = this.getAttribute('data-section');
-                const targetEl = document.getElementById(targetId);
-                if (targetEl) {
-                    e.preventDefault();
-                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    
-                    // Update active class
-                    navLinks.forEach(nl => nl.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // Update URL hash without scroll jump
-                    history.pushState(null, null, '#' + targetId);
-                }
-            });
-        });
-
-        // IntersectionObserver for scroll tracking
         const observerOptions = {
             root: null,
             rootMargin: '-20% 0px -60% 0px',
@@ -102,10 +82,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (entry.isIntersecting) {
                     const id = entry.target.id;
                     navLinks.forEach(link => {
-                        if (link.getAttribute('data-section') === id) {
+                        if (link.getAttribute('href') && link.getAttribute('href').includes(id)) {
                             link.classList.add('active');
-                        } else {
-                            link.classList.remove('active');
                         }
                     });
                 }
